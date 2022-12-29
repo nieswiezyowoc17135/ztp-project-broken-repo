@@ -20,6 +20,7 @@ namespace ProjektZTP.Repository.Repositories
             }
 
             await _context.Users.AddAsync(userEntry, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
         public async Task Delete(Guid Id, CancellationToken cancellationToken)
@@ -27,9 +28,17 @@ namespace ProjektZTP.Repository.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task Get(Guid Id, CancellationToken cancellationToken)
+        public async Task<User> Get(Guid Id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var tmp = await _context.Users.FindAsync(new object[] { Id }, cancellationToken);
+            if (tmp == null)
+            {
+                throw new Exception("There is no User with this ID in database");
+            }
+            else
+            {
+                return tmp;
+            }
         }
     }
 }

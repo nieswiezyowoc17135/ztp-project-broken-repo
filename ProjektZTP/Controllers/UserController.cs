@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProjektZTP.Data;
 using ProjektZTP.Features.UserFeatures;
-using ProjektZTP.Models;
+
 
 namespace ProjektZTP.Controllers
 {

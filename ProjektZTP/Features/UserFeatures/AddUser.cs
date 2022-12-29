@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
+using Microsoft.AspNetCore.Rewrite;
 using ProjektZTP.Models;
 
 namespace ProjektZTP.Features.UserFeatures;
@@ -11,6 +13,18 @@ public class AddUser
         string Email,
         string FirstName,
         string LastName) : IRequest<Result>;
+
+    public class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(x => x.Login).NotEmpty().NotNull().MaximumLength(15);
+            RuleFor(x => x.Password).NotEmpty().NotNull().MaximumLength(15);
+            RuleFor(x => x.Email).NotEmpty().NotNull().MaximumLength(20);
+            RuleFor(x => x.FirstName).NotEmpty().NotNull().MaximumLength(15);
+            RuleFor(x => x.LastName).NotEmpty().NotNull().MaximumLength(15);
+        }
+    }
 
     public class Handler : IRequestHandler<Command, Result>
     {

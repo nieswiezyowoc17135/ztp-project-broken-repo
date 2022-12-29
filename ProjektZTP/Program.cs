@@ -1,3 +1,5 @@
+using System.Reflection;
+using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -18,6 +20,10 @@ namespace ProjektZTP
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+#pragma warning disable CS0618
+            builder.Services.AddFluentValidation(x =>
+                x.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+#pragma warning restore CS0618
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabase")));
             builder.Services.AddTransient<IUserRepository, UserRepository>();

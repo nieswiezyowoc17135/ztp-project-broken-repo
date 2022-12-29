@@ -45,7 +45,7 @@ namespace ProjektZTP.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("ProjektZTP.Models.Product", b =>
@@ -70,7 +70,7 @@ namespace ProjektZTP.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("ProjektZTP.Models.ProductOrder", b =>
@@ -85,7 +85,7 @@ namespace ProjektZTP.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("ProductsOrders");
+                    b.ToTable("ProductsOrders", (string)null);
                 });
 
             modelBuilder.Entity("ProjektZTP.Models.User", b =>
@@ -121,7 +121,7 @@ namespace ProjektZTP.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("ProjektZTP.Models.Order", b =>

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "wmsDgY1sQg7RdDxflsJDgPdKhJoDl0G8x5YSicBOJeWA0hcJCtkmyemEu9P5+ctLVb/safP6efY6MVRbQUFRqQ==",
+  "dgSpecHash": "TMbCVVcZKFzEFc5jCgAvptygdea0SiCaJntRvDLTrVYAEwR/QjPs/1mCXCRHt2RQi5zbO/OERisMDlFSZ9/bpQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\PawelSwider\\source\\repos\\ProjektZTP\\ProjektZTP\\ProjektZTP.csproj",
   "expectedPackageFiles": [
@@ -8,6 +8,7 @@
     "C:\\Users\\PawelSwider\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
     "C:\\Users\\PawelSwider\\.nuget\\packages\\fluentassertions\\6.8.0\\fluentassertions.6.8.0.nupkg.sha512",
     "C:\\Users\\PawelSwider\\.nuget\\packages\\fluentvalidation\\11.4.0\\fluentvalidation.11.4.0.nupkg.sha512",
+    "C:\\Users\\PawelSwider\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.2.2\\fluentvalidation.aspnetcore.11.2.2.nupkg.sha512",
     "C:\\Users\\PawelSwider\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.4.0\\fluentvalidation.dependencyinjectionextensions.11.4.0.nupkg.sha512",
     "C:\\Users\\PawelSwider\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\PawelSwider\\.nuget\\packages\\mediatr\\11.1.0\\mediatr.11.1.0.nupkg.sha512",

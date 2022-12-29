@@ -26,16 +26,36 @@ namespace ProjektZTP.Models
 
 
         public Guid Id { get; set; }
+
         [MinLength(1)]
-        public string Login { get; set; }
+        [MaxLength(15)]
+        [Required(AllowEmptyStrings = false)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string Login { get; set; } = null!;
+
         [MinLength(1)]
-        public string Password { get; set; }
+        [MaxLength(15)]
+        [Required(AllowEmptyStrings = false)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string Password { get; set; } = null!;
+
         [MinLength(1)]
-        public string Email { get; set; }
+        [MaxLength(20)]
+        [Required(AllowEmptyStrings = false)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string Email { get; set; } = null!;
+
         [MinLength(1)]
-        public string FirstName { get; set; }
+        [MaxLength(15)]
+        [Required(AllowEmptyStrings = false)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string FirstName { get; set; } = null!;
+
         [MinLength(1)]
-        public string LastName { get; set; }
+        [MaxLength(15)]
+        [Required(AllowEmptyStrings = false)]
+        [DisplayFormat(ConvertEmptyStringToNull = false)]
+        public string LastName { get; set; } = null!;
 
         //order relation
         public ICollection<Order> Orders { get; set; }
