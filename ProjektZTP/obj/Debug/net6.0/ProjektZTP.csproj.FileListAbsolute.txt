@@ -9,6 +9,7 @@ C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\Azure.C
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\Azure.Identity.dll
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\FluentAssertions.dll
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\FluentValidation.dll
+C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\FluentValidation.AspNetCore.dll
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\Humanizer.dll
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\MediatR.dll
@@ -291,4 +292,3 @@ C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\obj\Debug\net6.0\refint\
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\obj\Debug\net6.0\ProjektZTP.pdb
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\obj\Debug\net6.0\ProjektZTP.genruntimeconfig.cache
 C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\obj\Debug\net6.0\ref\ProjektZTP.dll
-C:\Users\PawelSwider\source\repos\ProjektZTP\ProjektZTP\bin\Debug\net6.0\FluentValidation.AspNetCore.dll

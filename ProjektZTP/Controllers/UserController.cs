@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ProjektZTP.Features.UserFeatures;
-
+using ProjektZTP.Features.UserFeatures.Commands;
+using static ProjektZTP.Features.UserFeatures.Commands.EditUser;
 
 namespace ProjektZTP.Controllers
 {
@@ -17,56 +17,29 @@ namespace ProjektZTP.Controllers
         }
 
         // GET: api/User
-        /*[HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        [HttpGet]
+        public async Task<ActionResult> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            throw new NotImplementedException();
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(Guid id)
+        public async Task<ActionResult> GetUser(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user;
+            throw new NotImplementedException();
         }
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(Guid id, User user)
+        public async Task<ActionResult> Edit(Guid id, EditUser.InputData data, CancellationToken cancellationToken)
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }*/
+            var temp = new EditUser.Command(id, data.Login, data.Password, data.Email, data.FirstName,
+                data.LastName);
+            EditUser.Result user = await _mediator.Send(temp, cancellationToken);
+           return Ok(new { objectName = user.FirstName + " user is edited"});
+        }
 
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -74,28 +47,13 @@ namespace ProjektZTP.Controllers
         public async Task<ActionResult> Add(AddUser.Command command, CancellationToken cancellationToken)
         {
             AddUser.Result result = await _mediator.Send(command, cancellationToken);
-            return Ok(new { objectName = command.FirstName });
+            return Ok(new { objectName = result.Id });
         }
 
-        /*// DELETE: api/User/5
+        // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            throw new NotImplementedException();
         }
-
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.Id == id);
-        }*/
-    }
 }

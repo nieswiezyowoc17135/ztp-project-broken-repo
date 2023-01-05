@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using Microsoft.AspNetCore.Rewrite;
 using ProjektZTP.Models;
+using ProjektZTP.Repository.Interfaces;
 
-namespace ProjektZTP.Features.UserFeatures;
+namespace ProjektZTP.Features.UserFeatures.Commands;
 
 public class AddUser
 {

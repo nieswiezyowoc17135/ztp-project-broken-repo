@@ -1,10 +1,11 @@
-using System.Reflection;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using ProjektZTP.Data;
 using ProjektZTP.Repository.Repositories;
+using System.Reflection;
+using ProjektZTP.Repository.Interfaces;
 
 namespace ProjektZTP
 {
@@ -21,8 +22,9 @@ namespace ProjektZTP
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 #pragma warning disable CS0618
-            builder.Services.AddFluentValidation(x =>
-                x.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+            builder.Services.AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+            /*builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<Program>();*/
 #pragma warning restore CS0618
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabase")));
@@ -37,6 +39,10 @@ namespace ProjektZTP
                         .AllowAnyHeader()
                         .AllowAnyOrigin()
                 );
+            });
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.CustomSchemaIds(type => type.ToString());
             });
 
             var app = builder.Build();
