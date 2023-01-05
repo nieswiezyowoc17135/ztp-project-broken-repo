@@ -13,7 +13,7 @@ namespace ProjektZTP.Controllers
 
         public UserController(IMediator mediator)
         {
-            _mediator=mediator;
+            _mediator = mediator;
         }
 
         // GET: api/User
@@ -38,7 +38,7 @@ namespace ProjektZTP.Controllers
             var temp = new EditUser.Command(id, data.Login, data.Password, data.Email, data.FirstName,
                 data.LastName);
             EditUser.Result user = await _mediator.Send(temp, cancellationToken);
-           return Ok(new { objectName = user.FirstName + " user is edited"});
+            return Ok(new { objectName = user.FirstName + " user is edited" });
         }
 
         // POST: api/User
@@ -52,8 +52,10 @@ namespace ProjektZTP.Controllers
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> Delete(DeleteUser.Command command, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            DeleteUser.Result result = await _mediator.Send(command, cancellationToken);
+            return Ok("Correctly deleted User: " + result.Id);
         }
+    }
 }

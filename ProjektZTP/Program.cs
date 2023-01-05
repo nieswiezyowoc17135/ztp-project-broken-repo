@@ -23,8 +23,6 @@ namespace ProjektZTP
             builder.Services.AddSwaggerGen();
 #pragma warning disable CS0618
             builder.Services.AddFluentValidation(x => x.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
-            /*builder.Services.AddFluentValidationAutoValidation();
-            builder.Services.AddValidatorsFromAssemblyContaining<Program>();*/
 #pragma warning restore CS0618
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabase")));

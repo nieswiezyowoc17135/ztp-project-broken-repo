@@ -26,9 +26,12 @@ namespace ProjektZTP.Repository.Repositories
             await Save(cancellationToken);
         }
 
-        public async Task Delete(Guid Id, CancellationToken cancellationToken)
+        public async Task<Guid> Delete(DeleteUser.Command command, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            User dbSearchingResult = await Get(command.Id, cancellationToken);
+            _context.Users.Remove(dbSearchingResult);
+            await Save(cancellationToken);
+            return dbSearchingResult.Id;
         }
 
         public async Task<User> Update(EditUser.Command command, CancellationToken cancellationToken)
@@ -39,7 +42,7 @@ namespace ProjektZTP.Repository.Repositories
             dbSearchingResult.LastName = command.LastName;
             dbSearchingResult.Login = command.Login;
             dbSearchingResult.Password = command.Password;
-            await _context.SaveChangesAsync(cancellationToken);
+            await Save(cancellationToken);
             return dbSearchingResult;
         }
 

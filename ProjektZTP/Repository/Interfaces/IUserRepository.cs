@@ -6,7 +6,7 @@ namespace ProjektZTP.Repository.Interfaces;
 public interface IUserRepository
 {
     Task Add(User userEntry, CancellationToken cancellationToken);
-    Task Delete(Guid Id, CancellationToken cancellationToken);
+    Task<Guid> Delete(DeleteUser.Command command, CancellationToken cancellationToken);
     Task<User> Update(EditUser.Command command, CancellationToken cancellationToken);
     Task<User> Get(Guid Id, CancellationToken cancellationToken);
     Task<IEnumerable<User>> GetUsers(CancellationToken cancellationToken);
