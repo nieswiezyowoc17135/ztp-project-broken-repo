@@ -24,6 +24,22 @@ namespace ProjektZTP.Models
             LastName = lastName;
         }
 
+        public User(
+            Guid id,
+            string login,
+            string password,
+            string email,
+            string firstName,
+            string lastName) : this()
+        {
+            Id = id;
+            Login = login;
+            Password = password;
+            Email = email;
+            FirstName = firstName;
+            LastName = lastName;
+        }
+
 
         public Guid Id { get; set; }
 

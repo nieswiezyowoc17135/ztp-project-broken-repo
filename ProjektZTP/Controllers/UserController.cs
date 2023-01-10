@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProjektZTP.Features.UserFeatures.Commands;
-using static ProjektZTP.Features.UserFeatures.Commands.EditUser;
+using ProjektZTP.Features.UserFeatures.Queries;
 
 namespace ProjektZTP.Controllers
 {
@@ -18,27 +18,31 @@ namespace ProjektZTP.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult> GetUsers()
+        public async Task<ActionResult> GetUsers(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var query = new GetUsers.Query();
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
         }
 
         // GET: api/User/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult> GetUser(Guid id)
+        [HttpGet("{id:guid}")]
+        public async Task<GetUser.Result> GetUserById(Guid id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var query = new GetUser.Query(id);
+            var result = await _mediator.Send(query, cancellationToken);
+            return result;
         }
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Edit(Guid id, EditUser.InputData data, CancellationToken cancellationToken)
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> Edit(Guid id, EditUser.EditData data, CancellationToken cancellationToken)
         {
-            var temp = new EditUser.Command(id, data.Login, data.Password, data.Email, data.FirstName,
+            var command = new EditUser.Command(id, data.Login, data.Password, data.Email, data.FirstName,
                 data.LastName);
-            EditUser.Result user = await _mediator.Send(temp, cancellationToken);
-            return Ok(new { objectName = user.FirstName + " user is edited" });
+            EditUser.Result user = await _mediator.Send(command, cancellationToken);
+            return Ok($"User"+ user.Login + " is edited");
         }
 
         // POST: api/User
@@ -51,11 +55,12 @@ namespace ProjektZTP.Controllers
         }
 
         // DELETE: api/User/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(DeleteUser.Command command, CancellationToken cancellationToken)
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
+            var command = new DeleteUser.Command(id);
             DeleteUser.Result result = await _mediator.Send(command, cancellationToken);
-            return Ok("Correctly deleted User: " + result.Id);
+            return NoContent();
         }
     }
 }

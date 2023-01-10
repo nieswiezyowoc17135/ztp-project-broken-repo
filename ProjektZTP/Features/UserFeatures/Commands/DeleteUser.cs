@@ -9,14 +9,6 @@ public class DeleteUser
     public record Command(
         Guid Id) : IRequest<Result>;
 
-    public class Validator : AbstractValidator<Command>
-    {
-        public Validator()
-        {
-            RuleFor(x => x.Id).NotEmpty().NotNull();
-        }
-    }
-
     public class Handler : IRequestHandler<Command, Result>
     {
         private readonly IUserRepository _repository;
@@ -28,7 +20,8 @@ public class DeleteUser
 
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            await _repository.Delete(request, cancellationToken);
+            var userToEdit = await _repository.Get(request.Id, cancellationToken);
+            await _repository.Delete(userToEdit, cancellationToken);
             return new Result(request.Id);
         }
     }

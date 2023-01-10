@@ -1,6 +1,5 @@
-﻿using FluentValidation;
+﻿using Microsoft.EntityFrameworkCore;
 using ProjektZTP.Data;
-using ProjektZTP.Features.UserFeatures.Commands;
 using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
 
@@ -26,30 +25,22 @@ namespace ProjektZTP.Repository.Repositories
             await Save(cancellationToken);
         }
 
-        public async Task<Guid> Delete(DeleteUser.Command command, CancellationToken cancellationToken)
+        public async Task Delete(User user, CancellationToken cancellationToken)
         {
-            User dbSearchingResult = await Get(command.Id, cancellationToken);
-            _context.Users.Remove(dbSearchingResult);
+            _context.Users.Remove(user);
             await Save(cancellationToken);
-            return dbSearchingResult.Id;
         }
 
-        public async Task<User> Update(EditUser.Command command, CancellationToken cancellationToken)
+        public async Task<User> Update(User user, CancellationToken cancellationToken)
         {
-
-            User dbSearchingResult = await Get(command.Id, cancellationToken);
-            dbSearchingResult.FirstName = command.FirstName;
-            dbSearchingResult.LastName = command.LastName;
-            dbSearchingResult.Login = command.Login;
-            dbSearchingResult.Password = command.Password;
             await Save(cancellationToken);
-            return dbSearchingResult;
+            return user;
         }
 
 
-        public async Task<User> Get(Guid Id, CancellationToken cancellationToken)
+        public async Task<User> Get(Guid id, CancellationToken cancellationToken)
         {
-            var user = await _context.Users.FindAsync(new object[] { Id }, cancellationToken);
+            var user = await _context.Users.FindAsync(new object[] { id }, cancellationToken);
             if (user == null)
             {
                 throw new Exception("There is no User with this ID in database");
@@ -57,10 +48,21 @@ namespace ProjektZTP.Repository.Repositories
             return user;
         }
 
-        public Task<IEnumerable<User>> GetUsers(CancellationToken cancellationToken)
+        public async Task<IEnumerable<User>> GetUsers(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            IEnumerable<User> users = await _context.Users
+                .AsNoTracking()
+                .Select(x => new User(
+                    x.Id,
+                    x.Login,
+                    x.Password,
+                    x.Email,
+                    x.FirstName,
+                    x.LastName)).ToListAsync(cancellationToken);
+            return users;
         }
+
+
 
         public async Task Save(CancellationToken cancellationToken)
         {

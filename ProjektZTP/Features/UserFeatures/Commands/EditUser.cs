@@ -14,7 +14,7 @@ namespace ProjektZTP.Features.UserFeatures.Commands
             string FirstName,
             string LastName) : IRequest<Result>;
 
-        public class Validator : AbstractValidator<InputData>
+        public class Validator : AbstractValidator<EditData>
         {
             public Validator()
             {
@@ -35,9 +35,17 @@ namespace ProjektZTP.Features.UserFeatures.Commands
                 _repository = repository;
             }
 
-            public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
             {
-                var result = await _repository.Update(request, cancellationToken);
+                var userToEdit = await _repository.Get(command.Id, cancellationToken);
+
+                userToEdit.FirstName = command.FirstName;
+                userToEdit.LastName = command.LastName;
+                userToEdit.Email = command.Email;
+                userToEdit.Login = command.Login;
+                userToEdit.Password = command.Password;
+
+                var result = await _repository.Update(userToEdit, cancellationToken);
 
                 return new Result(
                     result.Login,
@@ -55,7 +63,7 @@ namespace ProjektZTP.Features.UserFeatures.Commands
             string FirstName,
             string LastName);
 
-        public record InputData(
+        public record EditData(
             string Login,
             string Password,
             string Email,
