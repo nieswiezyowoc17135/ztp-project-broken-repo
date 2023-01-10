@@ -22,15 +22,18 @@ namespace ProjektZTP.Models
             Email = email;
             FirstName = firstName;
             LastName = lastName;
+            Orders = new List<Order>();
         }
 
+        //for get methods
         public User(
             Guid id,
             string login,
             string password,
             string email,
             string firstName,
-            string lastName) : this()
+            string lastName,
+            ICollection<Order> orders) : this()
         {
             Id = id;
             Login = login;
@@ -38,6 +41,7 @@ namespace ProjektZTP.Models
             Email = email;
             FirstName = firstName;
             LastName = lastName;
+            Orders = orders;
         }
 
 

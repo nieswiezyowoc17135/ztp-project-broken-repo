@@ -16,7 +16,6 @@ namespace ProjektZTP.Controllers
             _mediator = mediator;
         }
 
-        // GET: api/User
         [HttpGet]
         public async Task<ActionResult> GetUsers(CancellationToken cancellationToken)
         {
@@ -25,17 +24,14 @@ namespace ProjektZTP.Controllers
             return Ok(result);
         }
 
-        // GET: api/User/5
         [HttpGet("{id:guid}")]
-        public async Task<GetUser.Result> GetUserById(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult> GetUserById(Guid id, CancellationToken cancellationToken)
         {
             var query = new GetUser.Query(id);
             var result = await _mediator.Send(query, cancellationToken);
-            return result;
+            return Ok(result);
         }
 
-        // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id:guid}")]
         public async Task<ActionResult> Edit(Guid id, EditUser.EditData data, CancellationToken cancellationToken)
         {
@@ -45,8 +41,6 @@ namespace ProjektZTP.Controllers
             return Ok($"User"+ user.Login + " is edited");
         }
 
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult> Add(AddUser.Command command, CancellationToken cancellationToken)
         {
@@ -54,7 +48,6 @@ namespace ProjektZTP.Controllers
             return Ok(new { objectName = result.Id });
         }
 
-        // DELETE: api/User/5
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {

@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
+using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
 
 namespace ProjektZTP.Features.UserFeatures.Queries;
@@ -24,7 +24,8 @@ public class GetUser
                 user.Password,
                 user.Email,
                 user.FirstName,
-                user.LastName);
+                user.LastName,
+                user.Orders);
         }
     }
 
@@ -33,6 +34,7 @@ public class GetUser
         string Password,
         string Email,
         string FirstName,
-        string LastName);
+        string LastName,
+        IEnumerable<Order> Orders);
 }
 

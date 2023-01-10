@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
 
@@ -18,13 +19,27 @@ public class GetUsers
 
         public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
         {
+            var tmpList = new List<UserDTO>();
             var result = await _repository.GetUsers(cancellationToken);
-            return new Result(result);
+            foreach (var user in result)
+            {
+                var tmp = new UserDTO(user.Login, user.Password, user.Email, user.FirstName, user.LastName,
+                    user.Orders);
+                tmpList.Add(tmp);
+            }
+            return new Result(tmpList);
         }
     }
 
     public record Result(
-        IEnumerable<User> Users
+        List<UserDTO> Users
         );
 
+    public record UserDTO(
+        string Login,
+        string Password,
+        string Email,
+        string FirstName,
+        string LastName,
+        IEnumerable<Order> Orders);
 }

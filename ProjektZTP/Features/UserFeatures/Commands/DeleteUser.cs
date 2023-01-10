@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
+﻿using MediatR;
 using ProjektZTP.Repository.Interfaces;
 
 namespace ProjektZTP.Features.UserFeatures.Commands;

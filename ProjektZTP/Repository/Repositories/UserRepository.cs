@@ -58,11 +58,10 @@ namespace ProjektZTP.Repository.Repositories
                     x.Password,
                     x.Email,
                     x.FirstName,
-                    x.LastName)).ToListAsync(cancellationToken);
+                    x.LastName,
+                    x.Orders)).ToListAsync(cancellationToken);
             return users;
         }
-
-
 
         public async Task Save(CancellationToken cancellationToken)
         {

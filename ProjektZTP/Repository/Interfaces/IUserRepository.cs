@@ -1,5 +1,4 @@
-﻿using ProjektZTP.Features.UserFeatures.Commands;
-using ProjektZTP.Models;
+﻿using ProjektZTP.Models;
 
 namespace ProjektZTP.Repository.Interfaces;
 
