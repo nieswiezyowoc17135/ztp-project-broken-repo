@@ -32,7 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\ProductFeatures\" />
     <Folder Include="Features\OrderFeatures\" />
   </ItemGroup>
 

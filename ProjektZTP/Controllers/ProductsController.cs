@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using ProjektZTP.Data;
+using ProjektZTP.Features.ProductFeatures.Commands;
+using ProjektZTP.Features.ProductFeatures.Queries;
+using ProjektZTP.Features.UserFeatures.Commands;
 using ProjektZTP.Models;
 
 namespace ProjektZTP.Controllers
@@ -8,53 +12,55 @@ namespace ProjektZTP.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly DatabaseContext _context;
+        private readonly IMediator _mediator;
 
-        public ProductsController(DatabaseContext context)
+        public ProductsController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
-        // GET: api/Products
+        //in progress
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult> GetProducts(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var query = new GetProducts.Query();
+            var result = await _mediator.Send(query, cancellationToken);
+            return Ok(result);
         }
 
-        // GET: api/Products/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(Guid id)
+        //done
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult> GetProduct(Guid id)
         {
-            throw new NotImplementedException();
+            var query = new GetProduct.Query(id);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
-        // PUT: api/Products/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(Guid id, Product product)
+        //done
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> Edit(Guid id, EditProduct.EditData data, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var command = new EditProduct.Command(id, data.Name, data.Price, data.Amount, data.Vat);
+            EditProduct.Result product = await _mediator.Send(command, cancellationToken);
+            return Ok("Product " + product.Name + "is edited");
         }
 
-        // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        //done
         [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        public async Task<ActionResult<Product>> Add(AddProduct.Command command, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            AddProduct.Result result = await _mediator.Send(command, cancellationToken);
+            return Ok(new { objectName = result.id });
         }
 
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
+        //done
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
-
-        private bool ProductExists(Guid id)
-        {
-            throw new NotImplementedException();
+            var command = new DeleteProduct.Command(id);
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
         }
     }
 }

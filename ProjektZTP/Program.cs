@@ -27,6 +27,7 @@ namespace ProjektZTP
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabase")));
             builder.Services.AddTransient<IUserRepository, UserRepository>();
+            builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
             builder.Services.AddMediatR(typeof(DatabaseContext).Assembly);
             builder.Services.AddCors(options =>
             {

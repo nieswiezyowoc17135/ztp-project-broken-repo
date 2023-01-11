@@ -4,6 +4,23 @@ namespace ProjektZTP.Models
 {
     public class Product
     {
+        public Product()
+        {
+        }
+
+        public Product(
+            string name,
+            float price,
+            int amount,
+            float vat) : this()
+        {
+            Id = Guid.NewGuid();
+            Name = name;
+            Price = price;
+            Amount = amount;
+            Vat = vat;
+        }
+
         public Guid Id { get; set; }
         [MinLength(1)]
         public string Name { get; set; }

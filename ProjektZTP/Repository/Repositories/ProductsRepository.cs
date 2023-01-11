@@ -1,4 +1,5 @@
-﻿using ProjektZTP.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ProjektZTP.Data;
 using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
 
@@ -51,11 +52,20 @@ public class ProductsRepository : IProductsRepository
         return product;
     }
 
-    public Task<IEnumerable<Product>> GetProducts(CancellationToken cancellationToken)
+    //done
+    public async Task<IEnumerable<Product>> GetProducts(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        IEnumerable<Product> products = await _context.Products
+            .AsNoTracking()
+            .Select(x => new Product(
+                x.Name,
+                x.Price,
+                x.Amount,
+                x.Vat)).ToListAsync(cancellationToken);
+        return products;
     }
 
+    //done
     public async Task Save(CancellationToken cancellationToken)
     {
         await _context.SaveChangesAsync(cancellationToken);
