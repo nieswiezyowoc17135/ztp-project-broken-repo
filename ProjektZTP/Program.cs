@@ -27,8 +27,10 @@ namespace ProjektZTP
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SqlDatabase")));
             builder.Services.AddTransient<IUserRepository, UserRepository>();
+            builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
             builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
             builder.Services.AddMediatR(typeof(DatabaseContext).Assembly);
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("FrontendClient", builder =>
