@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using ProjektZTP.Repository.Interfaces;
 
 namespace ProjektZTP.Features.ProductFeatures.Commands;

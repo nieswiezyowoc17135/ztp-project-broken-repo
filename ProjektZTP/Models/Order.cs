@@ -4,6 +4,19 @@ namespace ProjektZTP.Models
 {
     public class Order
     {
+        public Order()
+        {
+
+        }
+
+        public Order(Guid id, string customer, string address, Guid userId)
+        {
+            Id = id;
+            Customer = customer;
+            Address = address;
+            UserId = userId;
+        }
+
         public Guid Id { get; set; }
         [MinLength(1)]
         public string Customer { get; set; }

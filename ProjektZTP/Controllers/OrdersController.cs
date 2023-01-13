@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Differencing;
 using ProjektZTP.Features.OrderFeatures.Commands;
+using ProjektZTP.Features.OrderFeatures.Queries;
 using ProjektZTP.Models;
 
 namespace ProjektZTP.Controllers
@@ -15,38 +17,49 @@ namespace ProjektZTP.Controllers
         {
             _mediator = mediator;
         }
-/*
+        
+        //done
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Order>>> GetOrders()
+        public async Task<ActionResult> GetOrders(CancellationToken cancelaToken)
         {
-            throw new NotImplementedException();
+            var query = new GetOrders.Query();
+            var result = await _mediator.Send(query, cancelaToken);
+            return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        //done
+        [HttpGet("{id:guid}")]
         public async Task<ActionResult<Order>> GetOrder(Guid id)
         {
-            throw new NotImplementedException();
+            var query = new GetOrder.Query(id);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
 
+        //in progress
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder(Guid id, Order order)
+        public async Task<ActionResult> Edit(Guid id, EditOrder.EditData data, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var command = new EditOrder.Command(id, data.Address, data.Customer);
+            EditOrder.Result order = await _mediator.Send(command, cancellationToken);
+            return Ok("Order " + order.Id + " is edited");
         }
-*/
 
-        //In progress
+        //Done
         [HttpPost]
         public async Task<ActionResult> Add(AddOrder.Command command, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(command,cancellationToken);
             return Ok(result.id);
         }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteOrder(Guid id)
+        
+        //Done
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var command = new DeleteOrder.Command(id);
+            await _mediator.Send(command, cancellationToken);
+            return Ok();
         }
 
     }
