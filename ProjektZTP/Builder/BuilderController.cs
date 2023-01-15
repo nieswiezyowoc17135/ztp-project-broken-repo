@@ -4,10 +4,18 @@ using static BasicInvoiceBuilder;
 using ProjektZTP.Features.OrderFeatures.Queries;
 using Microsoft.EntityFrameworkCore;
 using ProjektZTP.Data;
+using System.ComponentModel;
 
 [Route("api/[controller]")]
 public class InvoiceController : Controller
 {
+    private Logger _logger;
+
+    public InvoiceController()
+    {
+            _logger = Logger.GetInstance();
+    }
+
     [HttpGet]
     public FileStreamResult GetInvoice()
     {
@@ -22,10 +30,12 @@ public class InvoiceController : Controller
         var total = products.Sum(p => p.Price * p.Amount * (1 + p.Vat));
         if (total > 100)
         {
+            
             invoiceBuilder = new PremiumInvoiceBuilder();
         }
         else
         {
+            _logger.Log("Basic Invoice is being created.");
             invoiceBuilder = new BasicInvoiceBuilder();
         }
 
