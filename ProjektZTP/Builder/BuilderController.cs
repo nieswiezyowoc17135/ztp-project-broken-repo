@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProjektZTP.Models;
-using static BasicInvoiceBuilder;
 using ProjektZTP.Features.OrderFeatures.Queries;
 using Microsoft.EntityFrameworkCore;
 using ProjektZTP.Data;
 using System.ComponentModel;
+using iTextSharp.text.pdf;
+using iTextSharp.text;
+using System.Net;
+using System.Net.Http.Headers;
+using System.IO;
+using System.Net.Mime;
 
 [Route("api/[controller]")]
 public class InvoiceController : Controller
@@ -13,79 +18,83 @@ public class InvoiceController : Controller
 
     public InvoiceController()
     {
-            _logger = Logger.GetInstance();
+        _logger = Logger.GetInstance();
     }
 
-    [HttpGet]
-    public FileStreamResult GetInvoice()
+
+    [HttpPost]
+    public FileStreamResult CreateInvoice(string type)
     {
-        // Retrieve the user, order, and products from the database
-        var user = GetUser();
-        var order = GetOrder();
-        var products = GetProducts();
+        InvoiceBuilder builder = new InvoiceBuilder();
+        builder.invoice = new Invoice();
+        InvoiceDirector director = new InvoiceDirector(builder);
 
-        InvoiceBuilder invoiceBuilder;
-
-        // Check the total amount of the order
-        var total = products.Sum(p => p.Price * p.Amount * (1 + p.Vat));
-        if (total > 100)
+        if (type=="invoice")
         {
+            _logger.Log("Invoice created.");
+            director.BuildStandardInvoice();
+        }
+        else if(type=="recipe")
+        {
+            _logger.Log("Recipe created.");
+            director.BuildRecipeInvoice();
+        }
+
+        Invoice invoice = builder.GetInvoice();
+
             
-            invoiceBuilder = new PremiumInvoiceBuilder();
-        }
-        else
-        {
-            _logger.Log("Basic Invoice is being created.");
-            invoiceBuilder = new BasicInvoiceBuilder();
-        }
+            Document document = new Document();
+            var stream = new MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(document, stream);
+             writer.CloseStream = false;
+             document.Open();
 
-        // Use the builder to create the invoice
-        invoiceBuilder.WithWorker(user)
-                      .WithOrder(order)
-                      .WithProducts(products);
+            // Add the invoice details to the PDF
+            if(invoice.CustomerName!=null)
+            document.Add(new Paragraph("Invoice for " + invoice.CustomerName));
+            if (invoice.Address != null)
+            document.Add(new Paragraph("Address: " + invoice.Address));
+            if (invoice.WorkerName != null)
+            document.Add(new Paragraph("Worker: " + invoice.WorkerName + " " + invoice.WorkerLastName));
+            document.Add(new Paragraph(" "));
 
-        return invoiceBuilder.Build();
-        
-    }
+            PdfPTable table = new PdfPTable(4);
+            table.AddCell("Product");
+            table.AddCell("Cost");
+            table.AddCell("Tax");
+            table.AddCell("Amount");
 
-    private User GetUser()
-    {
-
-        User user = new User
-        {
-            FirstName = "Ryszard",
-            LastName = "Rutkowski",
-            Email = "mail@gmail.com"
-
-
-        };
-        return user;
-
-    }
-
-    private Order GetOrder()
-    {
-        Order order = new Order
-        {
-            Customer = "Januszex",
-            Address = "Adres 123",
-        };
-        return order;
-    }
-
-    private List<Product> GetProducts()
-    {
-        List<Product> products = new List<Product>();
-        {
-            Product product = new Product
+        foreach (var product in invoice.Products)
             {
-                Name = "produkt1",
-                Price = 200,
-                Vat = 13
-            };
-            products.Add(product);
+                table.AddCell(product.Name);
+                table.AddCell(product.Price.ToString());
+            table.AddCell(product.Vat.ToString());
+            table.AddCell(product.Amount.ToString());
+        }
 
-        };
-        return products;
+        document.Add(table);
+        document.Add(new Paragraph("Total: " + invoice.Total.ToString()));
+        if(invoice.TotalTax!=0)
+        document.Add(new Paragraph("Total Taxes: " + invoice.TotalTax.ToString()));
+        if(invoice.TotalNoTax!=0)
+        document.Add(new Paragraph("Total without Taxes: " + invoice.TotalNoTax.ToString()));
+
+        document.Close();
+
+
+        if (stream.CanSeek)
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+        }
+
+        // Return the PDF document as a FileStreamResult
+        var result = new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
+        result.FileDownloadName = "JEfTest.pdf";
+        return result;
+
+
+
+
     }
 }
+
