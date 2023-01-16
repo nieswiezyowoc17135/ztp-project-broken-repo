@@ -1,11 +1,16 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProjektZTP.Data;
 using ProjektZTP.Repository.Repositories;
+using ProjektZTP.Mediator;
 using System.Reflection;
 using ProjektZTP.Repository.Interfaces;
+using ProjektZTP.Features.OrderFeatures.Commands.AddOrder;
+using static ProjektZTP.Mediator.MediatorPattern;
+using MediatR;
+using System.Net.WebSockets;
+using FluentAssertions.Common;
 
 namespace ProjektZTP
 {
@@ -41,6 +46,33 @@ namespace ProjektZTP
                         .AllowAnyOrigin()
                 );
             });
+
+            var mediator = new MediatorPattern.Mediator();
+
+            mediator.Register<AddOrderCommand, AddOrderCommandResult, AddOrderCommandHandler>();
+
+            builder.Services.AddSingleton<ICustomMediator>(mediator);
+
+            builder.Services.AddTransient<AddOrderCommandHandler>();
+
+
+            //CRUD Orders
+            //builder.Services.AddTransient<>
+            //builder.Services.AddTransient<>
+            //builder.Services.AddTransient<>
+            //builder.Services.AddTransient<>
+
+            ////CRUD User
+
+
+            ////CRUD Prodcuts
+            //    builder.Services.AddTransient<>
+            //    builder.Services.AddTransient<>
+            //    builder.Services.AddTransient<>
+            //    builder.Services.AddTransient<>
+            //    builder.Services.AddTransient<>
+            
+
             builder.Services.AddSwaggerGen(options =>
             {
                 options.CustomSchemaIds(type => type.ToString());
