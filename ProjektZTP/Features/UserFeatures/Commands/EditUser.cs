@@ -30,10 +30,13 @@ namespace ProjektZTP.Features.UserFeatures.Commands
         public class EditUserCommandHandler : IHandler<EditUserCommand, EditUserResult>
         {
             private readonly IUserRepository _repository;
-
+            private Logger _logger;
+            
+        
             public EditUserCommandHandler(IUserRepository repository)
             {
                 _repository = repository;
+                _logger = Logger.GetInstance();
             }
 
             public async Task<EditUserResult> HandleAsync(EditUserCommand command)
@@ -57,7 +60,7 @@ namespace ProjektZTP.Features.UserFeatures.Commands
                 userToEdit.Password = command.Password;
 
                 var result = await _repository.Update(userToEdit);
-
+                _logger.Log("User edited.");
                 return new EditUserResult(
                     result.Login,
                     result.Password,

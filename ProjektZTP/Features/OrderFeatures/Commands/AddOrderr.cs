@@ -87,7 +87,11 @@ public class AddOrder
             {
                 
                  var prod = await _repositoryproduct.Get(productid);
+
+                
                  lista.Add(prod);
+
+
 
             }
             _repositoryproduct.Get(request.UserId);

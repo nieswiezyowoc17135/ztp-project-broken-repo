@@ -24,8 +24,12 @@ public class EditOrder
     {
         private readonly IOrdersRepository _repository;
 
+        private Logger _logger;
+        
+        
         public EditOrderCommandHandler(IOrdersRepository repository)
         {
+            _logger = Logger.GetInstance();
             _repository = repository;
         }
 
@@ -46,7 +50,7 @@ public class EditOrder
             orderToEdit.Customer = request.Customer;
 
             var result = await _repository.Update(orderToEdit);
-
+            _logger.Log("Order edited.");
             return new EditOrderResult(
                 result.Id,
                 result.Address,

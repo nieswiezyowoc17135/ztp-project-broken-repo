@@ -12,8 +12,11 @@ public class DeleteOrder
     {
         private readonly IOrdersRepository _repository;
 
+        private Logger _logger;
+        
         public DeleteOrderCommandHandler(IOrdersRepository repository)
         {
+            _logger = Logger.GetInstance();
             _repository = repository;
         }
 
@@ -21,7 +24,7 @@ public class DeleteOrder
         {
             var orderToDelete = await _repository.Get(request.Id);
             await _repository.Delete(orderToDelete);
-
+            _logger.Log("Order deleted.");
             return new DeleteOrderResult(request.Id);
         }
     }

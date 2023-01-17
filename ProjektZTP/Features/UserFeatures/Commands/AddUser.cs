@@ -30,8 +30,12 @@ public class AddUser
     {
         private readonly IUserRepository _repository;
 
+        private Logger _logger;
+        
+        
         public AddUserCommandHandler(IUserRepository repository)
         {
+            _logger = Logger.GetInstance();
             _repository = repository;
         }
 
@@ -54,6 +58,7 @@ public class AddUser
                 request.LastName
 );
             await _repository.Add(entry);
+            _logger.Log("User created.");
             return new AddUserResult(entry.Id);
         }
     }
