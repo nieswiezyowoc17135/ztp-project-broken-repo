@@ -1,30 +1,31 @@
-﻿using MediatR;
-using ProjektZTP.Repository.Interfaces;
+﻿using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.UserFeatures.Commands;
 
 public class DeleteUser
 {
-    public record Command(
-        Guid Id) : IRequest<Result>;
+    public record DeleteUserCommand(
+        Guid Id) : IRequest<DeleteUserResult>;
 
-    public class Handler : IRequestHandler<Command, Result>
+    public class DeleteUserCommmandHandler : IHandler<DeleteUserCommand, DeleteUserResult>
     {
         private readonly IUserRepository _repository;
 
-        public Handler(IUserRepository repository)
+        public DeleteUserCommmandHandler(IUserRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<DeleteUserResult> HandleAsync(DeleteUserCommand request)
         {
-            var userToEdit = await _repository.Get(request.Id, cancellationToken);
-            await _repository.Delete(userToEdit, cancellationToken);
-            return new Result(request.Id);
+            var userToEdit = await _repository.Get(request.Id);
+            await _repository.Delete(userToEdit);
+
+            return new DeleteUserResult(request.Id);
         }
     }
 
-    public record Result(
+    public record DeleteUserResult(
         Guid Id);
 }

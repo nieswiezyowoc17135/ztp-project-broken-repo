@@ -15,32 +15,32 @@ public class OrdersRepository : IOrdersRepository
         _context = context;
     }
 
-    public async Task Add(Order orderEntry, CancellationToken cancellationToken)
+    public async Task Add(Order orderEntry)
     {
         if (orderEntry == null)
         {
             throw new ArgumentNullException(nameof(orderEntry));
         }
 
-        await _context.Orders.AddAsync(orderEntry, cancellationToken);
-        await Save(cancellationToken);
+        await _context.Orders.AddAsync(orderEntry);
+        await Save();
     }
 
-    public async Task Delete(Order order, CancellationToken cancellationToken)
+    public async Task Delete(Order order)
     {
         _context.Orders.Remove(order);
-        await Save(cancellationToken);
+        await Save();
     }
 
-    public async Task<Order> Update(Order order, CancellationToken cancellationToken)
+    public async Task<Order> Update(Order order)
     {
-        await Save(cancellationToken);
+        await Save();
         return order;
     }
 
-    public async Task<Order> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<Order> Get(Guid id)
     {
-        var result = await _context.Orders.FindAsync(id, cancellationToken);
+        var result = await _context.Orders.FindAsync(id);
         if (result == null)
         {
             throw new Exception("There is no Order with this ID in database");
@@ -49,7 +49,7 @@ public class OrdersRepository : IOrdersRepository
         return result;
     }
 
-    public async Task<IEnumerable<Order>> GetOrders(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Order>> GetOrders()
     {
         IEnumerable<Order> orders = await _context.Orders
             .AsNoTracking()
@@ -58,13 +58,13 @@ public class OrdersRepository : IOrdersRepository
                 x.Customer,
                 x.Address,
                 x.UserId
-            )).ToListAsync(cancellationToken);
+            )).ToListAsync();
         return orders;
     }
 
-    public async Task Save(CancellationToken cancellationToken)
+    public async Task Save()
     {
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync();
     }
 }
 

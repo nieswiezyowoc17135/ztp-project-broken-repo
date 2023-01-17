@@ -1,9 +1,9 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProjektZTP.Data;
 using ProjektZTP.Features.ProductFeatures.Commands;
 using ProjektZTP.Features.ProductFeatures.Queries;
 using ProjektZTP.Features.UserFeatures.Commands;
+using ProjektZTP.Mediator;
 using ProjektZTP.Models;
 
 namespace ProjektZTP.Controllers
@@ -12,19 +12,19 @@ namespace ProjektZTP.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly MediatorPattern.IMediator _mediator;
 
-        public ProductsController(IMediator mediator)
+        public ProductsController(MediatorPattern.IMediator mediator)
         {
             _mediator = mediator;
         }
 
         //in progress
         [HttpGet]
-        public async Task<ActionResult> GetProducts(CancellationToken cancellationToken)
+        public async Task<ActionResult> GetProducts()
         {
-            var query = new GetProducts.Query();
-            var result = await _mediator.Send(query, cancellationToken);
+            var query = new GetProducts.GetProdcutsQuery();
+            var result = await _mediator.SendAsync(query);
             return Ok(result);
         }
 
@@ -32,34 +32,37 @@ namespace ProjektZTP.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult> GetProduct(Guid id)
         {
-            var query = new GetProduct.Query(id);
-            var result = await _mediator.Send(query);
+            var query = new GetProduct.GetProductQuery(id);
+            var result = await _mediator.SendAsync(query);
+
             return Ok(result);
         }
 
         //done
         [HttpPut("{id:guid}")]
-        public async Task<ActionResult> Edit(Guid id, EditProduct.EditData data, CancellationToken cancellationToken)
+        public async Task<ActionResult> Edit(Guid id, EditProduct.EditProductCommand data)
         {
-            var command = new EditProduct.Command(id, data.Name, data.Price, data.Amount, data.Vat);
-            EditProduct.Result product = await _mediator.Send(command, cancellationToken);
+            var command = new EditProduct.EditProductCommand(id, data.Name, data.Price, data.Amount, data.Vat);
+            var product = await _mediator.SendAsync(command);
+
             return Ok("Product " + product.Name + "is edited");
         }
 
         //done
         [HttpPost]
-        public async Task<ActionResult<Product>> Add(AddProduct.Command command, CancellationToken cancellationToken)
+        public async Task<ActionResult<Product>> Add(AddProduct.AddProductCommand command)
         {
-            AddProduct.Result result = await _mediator.Send(command, cancellationToken);
+            var result = await _mediator.SendAsync(command);
             return Ok(new { objectName = result.id });
         }
 
         //done
         [HttpDelete("{id:guid}")]
-        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            var command = new DeleteProduct.Command(id);
-            await _mediator.Send(command, cancellationToken);
+            var command = new DeleteProduct.DeleteProductCommand(id);
+            await _mediator.SendAsync(command);
+
             return NoContent();
         }
     }

@@ -1,20 +1,21 @@
 ﻿using FluentValidation;
-using MediatR;
+
 using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.UserFeatures.Commands
 {
     public class EditUser
     {
-        public record Command(
+        public record EditUserCommand(
             Guid Id,
             string Login,
             string Password,
             string Email,
             string FirstName,
-            string LastName) : IRequest<Result>;
+            string LastName) : IRequest<EditUserResult>;
 
-        public class Validator : AbstractValidator<EditData>
+        public class Validator : AbstractValidator<EditUserCommand>
         {
             public Validator()
             {
@@ -26,18 +27,28 @@ namespace ProjektZTP.Features.UserFeatures.Commands
             }
         }
 
-        public class Handler : IRequestHandler<Command, Result>
+        public class EditUserCommandHandler : IHandler<EditUserCommand, EditUserResult>
         {
             private readonly IUserRepository _repository;
 
-            public Handler(IUserRepository repository)
+            public EditUserCommandHandler(IUserRepository repository)
             {
                 _repository = repository;
             }
 
-            public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+            public async Task<EditUserResult> HandleAsync(EditUserCommand command)
             {
-                var userToEdit = await _repository.Get(command.Id, cancellationToken);
+                var validator = new Validator();
+
+                var validatorResult = validator.Validate(command);
+
+                if (!validatorResult.IsValid)
+                {
+                    throw new ValidationException(validatorResult.Errors);
+                }
+
+
+                var userToEdit = await _repository.Get(command.Id);
 
                 userToEdit.FirstName = command.FirstName;
                 userToEdit.LastName = command.LastName;
@@ -45,9 +56,9 @@ namespace ProjektZTP.Features.UserFeatures.Commands
                 userToEdit.Login = command.Login;
                 userToEdit.Password = command.Password;
 
-                var result = await _repository.Update(userToEdit, cancellationToken);
+                var result = await _repository.Update(userToEdit);
 
-                return new Result(
+                return new EditUserResult(
                     result.Login,
                     result.Password,
                     result.Email,
@@ -56,14 +67,7 @@ namespace ProjektZTP.Features.UserFeatures.Commands
             }
         }
 
-        public record Result(
-            string Login,
-            string Password,
-            string Email,
-            string FirstName,
-            string LastName);
-
-        public record EditData(
+        public record EditUserResult(
             string Login,
             string Password,
             string Email,

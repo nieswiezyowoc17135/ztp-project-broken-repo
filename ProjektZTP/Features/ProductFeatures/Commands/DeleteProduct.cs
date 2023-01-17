@@ -1,30 +1,30 @@
-﻿using MediatR;
-using ProjektZTP.Repository.Interfaces;
+﻿using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.ProductFeatures.Commands;
 
 public class DeleteProduct
 {
-    public record Command(
-        Guid Id) : IRequest<Result>;
+    public record DeleteProductCommand(
+        Guid Id) : IRequest<DeleteProductResult>;
 
-    public class Handler : IRequestHandler<Command, Result>
+    public class DeleteOrderCommandHandler : IHandler<DeleteProductCommand, DeleteProductResult>
     {
         private readonly IProductsRepository _repository;
 
-        public Handler(IProductsRepository repository)
+        public DeleteOrderCommandHandler(IProductsRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<DeleteProductResult> HandleAsync(DeleteProductCommand request)
         {
-            var productToDelete = await _repository.Get(request.Id, cancellationToken);
-            await _repository.Delete(productToDelete, cancellationToken);
-            return new Result(request.Id);
+            var productToDelete = await _repository.Get(request.Id);
+            await _repository.Delete(productToDelete);
+            return new DeleteProductResult(request.Id);
         }
     }
 
-    public record Result(Guid Id);
+    public record DeleteProductResult(Guid Id);
 }
 

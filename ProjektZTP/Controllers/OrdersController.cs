@@ -1,8 +1,5 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Differencing;
+﻿using Microsoft.AspNetCore.Mvc;
 using ProjektZTP.Features.OrderFeatures.Commands;
-using ProjektZTP.Features.OrderFeatures.Commands.AddOrder;
 using ProjektZTP.Features.OrderFeatures.Queries;
 using ProjektZTP.Mediator;
 using ProjektZTP.Models;
@@ -13,22 +10,19 @@ namespace ProjektZTP.Controllers
     [ApiController]
     public class OrdersController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly MediatorPattern.IMediator _mediator;
 
-        private readonly MediatorPattern.IMediator _customMediator;
-
-        public OrdersController(IMediator mediator, MediatorPattern.IMediator customMediator)
+        public OrdersController(MediatorPattern.IMediator customMediator)
         {
-            _mediator = mediator;
-            _customMediator = customMediator;
+            _mediator = customMediator;
         }
 
         //done
         [HttpGet]
-        public async Task<ActionResult> GetOrders(CancellationToken cancelaToken)
+        public async Task<ActionResult> GetOrders()
         {
-            var query = new GetOrders.Query();
-            var result = await _mediator.Send(query, cancelaToken);
+            var query = new GetOrders.GetOrdersQuery();
+            var result = await _mediator.SendAsync(query);
             return Ok(result);
         }
 
@@ -36,34 +30,36 @@ namespace ProjektZTP.Controllers
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<Order>> GetOrder(Guid id)
         {
-            var query = new GetOrder.Query(id);
-            var result = await _mediator.Send(query);
+            var query = new GetOrder.GetOrderQuery(id);
+            var result = await _mediator.SendAsync(query);
             return Ok(result);
         }
 
         //in progress
         [HttpPut("{id}")]
-        public async Task<ActionResult> Edit(Guid id, EditOrder.EditData data, CancellationToken cancellationToken)
+        public async Task<ActionResult> Edit(Guid id, EditOrder.EditOrderCommand data)
         {
-            var command = new EditOrder.Command(id, data.Address, data.Customer);
-            EditOrder.Result order = await _mediator.Send(command, cancellationToken);
+            var command = new EditOrder.EditOrderCommand(id, data.Address, data.Customer);
+
+            var order = await _mediator.SendAsync(command);
             return Ok("Order " + order.Id + " is edited");
         }
 
         //Done
         [HttpPost]
-        public async Task<ActionResult> Add(AddOrderCommand command)
+        public async Task<ActionResult> Add(AddOrder.AddOrderCommand command)
         {
-            var result = await _customMediator.SendAsync(command);
+            var result = await _mediator.SendAsync(command);
+
             return Ok();
         }
         
         //Done
         [HttpDelete("{id:guid}")]
-        public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            var command = new DeleteOrder.Command(id);
-            await _mediator.Send(command, cancellationToken);
+            var command = new DeleteOrder.DeleteOrderCommand(id);
+            await _mediator.SendAsync(command);
             return Ok();
         }
 

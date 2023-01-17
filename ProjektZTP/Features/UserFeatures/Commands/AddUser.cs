@@ -1,20 +1,20 @@
 ﻿using FluentValidation;
-using MediatR;
 using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.UserFeatures.Commands;
 
 public class AddUser
 {
-    public record Command(
+    public record AddUserCommand(
         string Login,
         string Password,
         string Email,
         string FirstName,
-        string LastName) : IRequest<Result>;
+        string LastName) : IRequest<AddUserResult>;
 
-    public class Validator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<AddUserCommand>
     {
         public Validator()
         {
@@ -26,29 +26,38 @@ public class AddUser
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result>
+    public class AddUserCommandHandler : IHandler<AddUserCommand, AddUserResult>
     {
         private readonly IUserRepository _repository;
 
-        public Handler(IUserRepository repository)
+        public AddUserCommandHandler(IUserRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<AddUserResult> HandleAsync(AddUserCommand request)
         {
+            var validator = new Validator();
+
+            var result = validator.Validate(request);
+
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+
             var entry = new User(
                 request.Login,
                 request.Password,
                 request.Email,
                 request.FirstName,
                 request.LastName
-            );
-            await _repository.Add(entry, cancellationToken);
-            return new Result(entry.Id);
+);
+            await _repository.Add(entry);
+            return new AddUserResult(entry.Id);
         }
     }
 
-    public record Result(Guid Id);
+    public record AddUserResult(Guid Id);
 }
 

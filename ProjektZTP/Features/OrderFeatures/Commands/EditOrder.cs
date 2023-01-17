@@ -1,17 +1,17 @@
 ﻿using FluentValidation;
-using MediatR;
 using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.OrderFeatures.Commands;
 public class EditOrder
 {
-    public record Command(
+    public record EditOrderCommand(
         Guid Id,
         string Address,
         string Customer
-    ) : IRequest<Result>;
+    ) : IRequest<EditOrderResult>;
 
-    public class Validator : AbstractValidator<EditData>
+    public class Validator : AbstractValidator<EditOrderCommand>
     {
         public Validator()
         {
@@ -20,25 +20,34 @@ public class EditOrder
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result>
+    public class EditOrderCommandHandler : IHandler<EditOrderCommand, EditOrderResult>
     {
         private readonly IOrdersRepository _repository;
 
-        public Handler(IOrdersRepository repository)
+        public EditOrderCommandHandler(IOrdersRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<EditOrderResult> HandleAsync(EditOrderCommand request)
         {
-            var orderToEdit = await _repository.Get(request.Id, cancellationToken);
+            var validator = new Validator();
+
+            var validatorResult = validator.Validate(request);
+
+            if (!validatorResult.IsValid)
+            {
+                throw new ValidationException(validatorResult.Errors);
+            }
+
+            var orderToEdit = await _repository.Get(request.Id);
 
             orderToEdit.Address = request.Address;
             orderToEdit.Customer = request.Customer;
 
-            var result = await _repository.Update(orderToEdit,cancellationToken);
+            var result = await _repository.Update(orderToEdit);
 
-            return new Result(
+            return new EditOrderResult(
                 result.Id,
                 result.Address,
                 result.Customer,
@@ -46,14 +55,10 @@ public class EditOrder
         }
     }
 
-    public record Result(
+    public record EditOrderResult(
         Guid Id,
         string Address,
         string Customer,
         Guid UserId);
-
-    public record EditData(
-        string Address,
-        string Customer);
 }
 

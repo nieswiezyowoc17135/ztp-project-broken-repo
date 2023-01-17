@@ -15,35 +15,35 @@ public class ProductsRepository : IProductsRepository
     }
 
     //done
-    public async Task Add(Product productEntry, CancellationToken cancellationToken)
+    public async Task Add(Product productEntry)
     {
         if (productEntry == null)
         {
             throw new ArgumentNullException(nameof(productEntry));
         }
 
-        await _context.Products.AddAsync(productEntry, cancellationToken);
-        await Save(cancellationToken);
+        await _context.Products.AddAsync(productEntry);
+        await Save();
     }
 
     //done
-    public async Task Delete(Product product, CancellationToken cancellationToken)
+    public async Task Delete(Product product)
     {
         _context.Products.Remove(product);
-        await Save(cancellationToken);
+        await Save();
     }
 
     //done
-    public async Task<Product> Update(Product product, CancellationToken cancellationToken)
+    public async Task<Product> Update(Product product)
     {
-        await Save(cancellationToken);
+        await Save();
         return product;
     }
 
     //done
-    public async Task<Product> Get(Guid id, CancellationToken cancellationToken)
+    public async Task<Product> Get(Guid id)
     {
-        var product = await _context.Products.FindAsync(new object[] { id }, cancellationToken);
+        var product = await _context.Products.FindAsync(new object[] { id });
         if (product == null)
         {
             throw new Exception("There is no Product with this ID in database");
@@ -53,7 +53,7 @@ public class ProductsRepository : IProductsRepository
     }
 
     //done
-    public async Task<IEnumerable<Product>> GetProducts(CancellationToken cancellationToken)
+    public async Task<IEnumerable<Product>> GetProducts()
     {
         IEnumerable<Product> products = await _context.Products
             .AsNoTracking()
@@ -61,14 +61,14 @@ public class ProductsRepository : IProductsRepository
                 x.Name,
                 x.Price,
                 x.Amount,
-                x.Vat)).ToListAsync(cancellationToken);
+                x.Vat)).ToListAsync();
         return products;
     }
 
     //done
-    public async Task Save(CancellationToken cancellationToken)
+    public async Task Save()
     {
-        await _context.SaveChangesAsync(cancellationToken);
+        await _context.SaveChangesAsync();
     }
 }
 

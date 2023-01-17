@@ -1,25 +1,25 @@
-﻿using MediatR;
-using ProjektZTP.Repository.Interfaces;
+﻿using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.OrderFeatures.Queries;
 
 public class GetOrders
 {
-    public record Query() : IRequest<Result>;
+    public record GetOrdersQuery() : IRequest<GetOrdersResult>;
 
-    public class Handler : IRequestHandler<Query, Result>
+    public class GetOrdersQueryHandler : IHandler<GetOrdersQuery, GetOrdersResult>
     {
         private readonly IOrdersRepository _repository;
 
-        public Handler(IOrdersRepository repository)
+        public GetOrdersQueryHandler(IOrdersRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<GetOrdersResult> HandleAsync(GetOrdersQuery request)
         {
             var tmpList = new List<OrderDTO>();
-            var result = await _repository.GetOrders(cancellationToken);
+            var result = await _repository.GetOrders();
 
             foreach (var order in result)
             {
@@ -31,11 +31,11 @@ public class GetOrders
                 tmpList.Add(tmp);
             }
 
-            return new Result(tmpList);
+            return new GetOrdersResult(tmpList);
         }
     }
 
-    public record Result(
+    public record GetOrdersResult(
         List<OrderDTO> Orders);
 
     public record OrderDTO(

@@ -14,33 +14,33 @@ namespace ProjektZTP.Repository.Repositories
             _context = context;
         }
 
-        public async Task Add(User userEntry, CancellationToken cancellationToken)
+        public async Task Add(User userEntry)
         {
             if (userEntry == null)
             {
                 throw new ArgumentNullException(nameof(userEntry));
             }
 
-            await _context.Users.AddAsync(userEntry, cancellationToken);
-            await Save(cancellationToken);
+            await _context.Users.AddAsync(userEntry);
+            await Save();
         }
 
-        public async Task Delete(User user, CancellationToken cancellationToken)
+        public async Task Delete(User user)
         {
             _context.Users.Remove(user);
-            await Save(cancellationToken);
+            await Save();
         }
 
-        public async Task<User> Update(User user, CancellationToken cancellationToken)
+        public async Task<User> Update(User user)
         {
-            await Save(cancellationToken);
+            await Save();
             return user;
         }
 
 
-        public async Task<User> Get(Guid id, CancellationToken cancellationToken)
+        public async Task<User> Get(Guid id)
         {
-            var user = await _context.Users.FindAsync(new object[] { id }, cancellationToken);
+            var user = await _context.Users.FindAsync(new object[] { id });
             if (user == null)
             {
                 throw new Exception("There is no User with this ID in database");
@@ -48,7 +48,7 @@ namespace ProjektZTP.Repository.Repositories
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers(CancellationToken cancellationToken)
+        public async Task<IEnumerable<User>> GetUsers()
         {
             IEnumerable<User> users = await _context.Users
                 .AsNoTracking()
@@ -59,13 +59,13 @@ namespace ProjektZTP.Repository.Repositories
                     x.Email,
                     x.FirstName,
                     x.LastName,
-                    x.Orders)).ToListAsync(cancellationToken);
+                    x.Orders)).ToListAsync();
             return users;
         }
 
-        public async Task Save(CancellationToken cancellationToken)
+        public async Task Save()
         {
-            await _context.SaveChangesAsync(cancellationToken);
+            await _context.SaveChangesAsync();
         }
     }
 }

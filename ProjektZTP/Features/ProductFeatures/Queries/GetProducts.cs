@@ -1,14 +1,14 @@
 ﻿using System.Runtime.CompilerServices;
-using MediatR;
 using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.ProductFeatures.Queries;
 
 public class GetProducts
 {
-    public record Query() : IRequest<Result>;
+    public record GetProdcutsQuery() : IRequest<GetProductsResult>;
 
-    public class Handler : IRequestHandler<Query, Result>
+    public class Handler : IHandler<GetProdcutsQuery, GetProductsResult>
     {
         private readonly IProductsRepository _repository;
 
@@ -17,10 +17,10 @@ public class GetProducts
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<GetProductsResult> HandleAsync(GetProdcutsQuery request)
         {
             var tmpList = new List<ProductDTO>();
-            var result = await _repository.GetProducts(cancellationToken);
+            var result = await _repository.GetProducts();
             foreach (var product in result)
             {
                 var tmp = new ProductDTO(
@@ -31,11 +31,11 @@ public class GetProducts
                 tmpList.Add(tmp);
             }
 
-            return new Result(tmpList);
+            return new GetProductsResult(tmpList);
         }
     }
 
-    public record Result(
+    public record GetProductsResult(
         List<ProductDTO> Products);
 
     public record ProductDTO(

@@ -1,19 +1,19 @@
 ﻿using FluentValidation;
-using MediatR;
 using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.ProductFeatures.Commands;
 
 public class EditProduct
 {
-    public record Command(
+    public record EditProductCommand(
         Guid Id,
         string Name,
         float Price,
         int Amount,
-        float Vat) : IRequest<Result>;
+        float Vat) : IRequest<EditProductResult>;
 
-    public class Validator : AbstractValidator<EditData>
+    public class Validator : AbstractValidator<EditProductCommand>
     {
         public Validator()
         {
@@ -24,27 +24,36 @@ public class EditProduct
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result>
-    {
+    public class EditProductCommandHandler : IHandler<EditProductCommand, EditProductResult>
+    { 
         private readonly IProductsRepository _repository;
 
-        public Handler(IProductsRepository repository)
+        public EditProductCommandHandler(IProductsRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<EditProductResult> HandleAsync(EditProductCommand request)
         {
-            var productToEdit = await _repository.Get(command.Id, cancellationToken);
-            
-            productToEdit.Name = command.Name;
-            productToEdit.Price = command.Price;
-            productToEdit.Amount = command.Amount;
-            productToEdit.Vat = command.Vat;
+            var validator = new Validator();
 
-            var result = await _repository.Update(productToEdit, cancellationToken);
+            var validatorResult = validator.Validate(request);
 
-            return new Result(
+            if (!validatorResult.IsValid)
+            {
+                throw new ValidationException(validatorResult.Errors);
+            }
+
+            var productToEdit = await _repository.Get(request.Id);
+
+            productToEdit.Name = request.Name;
+            productToEdit.Price = request.Price;
+            productToEdit.Amount = request.Amount;
+            productToEdit.Vat = request.Vat;
+
+            var result = await _repository.Update(productToEdit);
+
+            return new EditProductResult(
                 result.Name,
                 result.Price,
                 result.Amount,
@@ -52,13 +61,7 @@ public class EditProduct
         }
     }
 
-    public record Result(
-        string Name,
-        float Price,
-        int Amount,
-        float Vat);
-
-    public record EditData(
+    public record EditProductResult(
         string Name,
         float Price,
         int Amount,

@@ -1,20 +1,19 @@
 ﻿using FluentValidation;
-using MediatR;
-using NuGet.Packaging.Core;
 using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.ProductFeatures.Commands;
 
 public class AddProduct
 {
-    public record Command(
+    public record AddProductCommand(
         string Name,
         float Price,
         int Amount,
-        float Vat) : IRequest<Result>;
+        float Vat) : IRequest<AddProductResult>;
 
-    public class Validator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<AddProductCommand>
     {
         public Validator()
         {
@@ -25,27 +24,38 @@ public class AddProduct
         }
     }
 
-    public class Handler : IRequestHandler<Command, Result>
+    public class AddProductCommandHandler : IHandler<AddProductCommand, AddProductResult>
     {
         private readonly IProductsRepository _repository;
 
-        public Handler(IProductsRepository repository)
+        public AddProductCommandHandler(IProductsRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<AddProductResult> HandleAsync(AddProductCommand request)
         {
+            var validator = new Validator();
+
+            var result = validator.Validate(request);
+
+            if (!result.IsValid)
+            {
+                throw new ValidationException(result.Errors);
+            }
+
             var entry = new Product(
                 request.Name,
                 request.Price,
                 request.Amount,
                 request.Vat);
-            await _repository.Add(entry, cancellationToken);
-            return new Result(entry.Id);
+
+            await _repository.Add(entry);
+
+            return new AddProductResult(entry.Id);
         }
     }
 
-    public record Result(Guid id);
+    public record AddProductResult(Guid id);
 }
 

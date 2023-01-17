@@ -1,25 +1,26 @@
-﻿using MediatR;
-using ProjektZTP.Models;
+﻿using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.UserFeatures.Queries;
 
 public class GetUser
 {
-    public record Query(Guid Id) : IRequest<Result>;
+    public record GetUserQuery(Guid Id) : IRequest<GetUserResult>;
 
-    public class Handler : IRequestHandler<Query, Result>
+    public class GetUserQueryHandler : IHandler<GetUserQuery, GetUserResult>
     {
         private readonly IUserRepository _repository;
 
-        public Handler(IUserRepository repository)
+        public GetUserQueryHandler(IUserRepository repository)
         {
             _repository = repository;
         }
-        public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
+
+        public async Task<GetUserResult> HandleAsync(GetUserQuery request)
         {
-            var user = await _repository.Get(request.Id, cancellationToken);
-            return new Result(
+            var user = await _repository.Get(request.Id);
+            return new GetUserResult(
                 user.Login,
                 user.Password,
                 user.Email,
@@ -29,7 +30,7 @@ public class GetUser
         }
     }
 
-    public record Result(
+    public record GetUserResult(
         string Login,
         string Password,
         string Email,

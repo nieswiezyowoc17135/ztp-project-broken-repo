@@ -1,25 +1,25 @@
-﻿using MediatR;
-using ProjektZTP.Repository.Interfaces;
+﻿using ProjektZTP.Repository.Interfaces;
+using static ProjektZTP.Mediator.Abstract;
 
 namespace ProjektZTP.Features.OrderFeatures.Queries;
 
 public class GetOrder
 {
-    public record Query(Guid id) : IRequest<Result>;
+    public record GetOrderQuery(Guid id) : IRequest<GetOrderResult>;
 
-    public class Handler : IRequestHandler<Query, Result>
+    public class GetOrderQueryHandler : IHandler<GetOrderQuery, GetOrderResult>
     {
         private readonly IOrdersRepository _repository;
 
-        public Handler(IOrdersRepository repository)
+        public GetOrderQueryHandler(IOrdersRepository repository)
         {
             _repository = repository;
         }
 
-        public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<GetOrderResult> HandleAsync(GetOrderQuery request)
         {
-            var order = await _repository.Get(request.id, cancellationToken);
-            return new Result(
+            var order = await _repository.Get(request.id);
+            return new GetOrderResult(
                 order.Id,
                 order.Address,
                 order.Customer,
@@ -27,7 +27,7 @@ public class GetOrder
         }
     }
 
-    public record Result(
+    public record GetOrderResult(
         Guid Id,
         string Address,
         string Customer,
