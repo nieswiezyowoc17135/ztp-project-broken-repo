@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PawelSwider\\source\\repos\\ProjektZTP\\ProjektZTP\\ProjektZTP.csproj": {}
+    "C:\\Users\\jkirylowicz\\source\\repos\\ZTPProjekt\\ztp-project\\ProjektZTP\\ProjektZTP.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PawelSwider\\source\\repos\\ProjektZTP\\ProjektZTP\\ProjektZTP.csproj": {
+    "C:\\Users\\jkirylowicz\\source\\repos\\ZTPProjekt\\ztp-project\\ProjektZTP\\ProjektZTP.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PawelSwider\\source\\repos\\ProjektZTP\\ProjektZTP\\ProjektZTP.csproj",
+        "projectUniqueName": "C:\\Users\\jkirylowicz\\source\\repos\\ZTPProjekt\\ztp-project\\ProjektZTP\\ProjektZTP.csproj",
         "projectName": "ProjektZTP",
-        "projectPath": "C:\\Users\\PawelSwider\\source\\repos\\ProjektZTP\\ProjektZTP\\ProjektZTP.csproj",
-        "packagesPath": "C:\\Users\\PawelSwider\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PawelSwider\\source\\repos\\ProjektZTP\\ProjektZTP\\obj\\",
+        "projectPath": "C:\\Users\\jkirylowicz\\source\\repos\\ZTPProjekt\\ztp-project\\ProjektZTP\\ProjektZTP.csproj",
+        "packagesPath": "C:\\Users\\jkirylowicz\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\jkirylowicz\\source\\repos\\ZTPProjekt\\ztp-project\\ProjektZTP\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\PawelSwider\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\jkirylowicz\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -92,6 +92,10 @@
               "target": "Package",
               "version": "[7.0.0, )"
             },
+            "Microsoft.Extensions.DependencyInjection": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[6.0.11, )"
@@ -111,6 +115,10 @@
             "Swashbuckle.AspNetCore.Swagger": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "iTextSharp": {
+              "target": "Package",
+              "version": "[5.5.13.3, )"
             }
           },
           "imports": [
@@ -132,7 +140,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.405\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }

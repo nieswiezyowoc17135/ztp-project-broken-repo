@@ -7,7 +7,7 @@ using ProjektZTP.Repository.Interfaces;
 
 namespace ProjektZTP.Features.OrderFeatures.Commands;
 
-public class AddOrder
+public class AddOrderr
 {
     public record Command(
         string Customer,

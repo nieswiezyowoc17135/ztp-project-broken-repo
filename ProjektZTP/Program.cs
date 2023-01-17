@@ -1,11 +1,12 @@
-using FluentValidation;
 using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.EntityFrameworkCore;
 using ProjektZTP.Data;
 using ProjektZTP.Repository.Repositories;
 using System.Reflection;
 using ProjektZTP.Repository.Interfaces;
+using ProjektZTP.Mediator;
+using MediatR;
+
 
 namespace ProjektZTP
 {
@@ -41,6 +42,9 @@ namespace ProjektZTP
                         .AllowAnyOrigin()
                 );
             });
+
+            builder.Services.AddMediator(ServiceLifetime.Scoped, typeof(Program));
+
             builder.Services.AddSwaggerGen(options =>
             {
                 options.CustomSchemaIds(type => type.ToString());

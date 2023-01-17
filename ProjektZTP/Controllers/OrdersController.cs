@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Differencing;
 using ProjektZTP.Features.OrderFeatures.Commands;
+using ProjektZTP.Features.OrderFeatures.Commands.AddOrder;
 using ProjektZTP.Features.OrderFeatures.Queries;
+using ProjektZTP.Mediator;
 using ProjektZTP.Models;
 
 namespace ProjektZTP.Controllers
@@ -13,11 +15,14 @@ namespace ProjektZTP.Controllers
     {
         private readonly IMediator _mediator;
 
-        public OrdersController(IMediator mediator)
+        private readonly MediatorPattern.IMediator _customMediator;
+
+        public OrdersController(IMediator mediator, MediatorPattern.IMediator customMediator)
         {
             _mediator = mediator;
+            _customMediator = customMediator;
         }
-        
+
         //done
         [HttpGet]
         public async Task<ActionResult> GetOrders(CancellationToken cancelaToken)
@@ -47,10 +52,10 @@ namespace ProjektZTP.Controllers
 
         //Done
         [HttpPost]
-        public async Task<ActionResult> Add(AddOrder.Command command, CancellationToken cancellationToken)
+        public async Task<ActionResult> Add(AddOrderCommand command)
         {
-            var result = await _mediator.Send(command,cancellationToken);
-            return Ok(result.id);
+            var result = await _customMediator.SendAsync(command);
+            return Ok();
         }
         
         //Done
