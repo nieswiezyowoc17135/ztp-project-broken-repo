@@ -10,6 +10,8 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.IO;
 using System.Net.Mime;
+using Org.BouncyCastle.Utilities.Net;
+using System.Reflection.PortableExecutable;
 
 [Route("api/[controller]")]
 public class InvoiceController : Controller
@@ -25,59 +27,58 @@ public class InvoiceController : Controller
     [HttpPost]
     public FileStreamResult CreateInvoice(string type)
     {
-        InvoiceBuilder builder = new InvoiceBuilder();
-        builder.invoice = new Invoice();
-        InvoiceDirector director = new InvoiceDirector(builder);
+        PdfBuilder builder;
+        PdfDirector director = new PdfDirector();
 
-        if (type=="invoice")
+        if (type == "invoice")
         {
             _logger.Log("Invoice created.");
-            director.BuildStandardInvoice();
+            builder = new InvoiceBuilder();
+            director.BuildStandardFile(builder);
+            return SaveFile(builder.File);
         }
-        else if(type=="recipe")
+        else
         {
-            _logger.Log("Recipe created.");
-            director.BuildRecipeInvoice();
+            _logger.Log("Receipt created.");
+            builder = new ReceiptBuilder();
+            director.BuildStandardFile(builder);
+            return SaveFile(builder.File);
         }
 
-        Invoice invoice = builder.GetInvoice();
+    }
 
-            
-            Document document = new Document();
-            var stream = new MemoryStream();
-            PdfWriter writer = PdfWriter.GetInstance(document, stream);
-             writer.CloseStream = false;
-             document.Open();
+    private static FileStreamResult SaveFile(File file)
+    {
+        Document document = new Document();
+        var stream = new MemoryStream();
+        PdfWriter writer = PdfWriter.GetInstance(document, stream);
+        writer.CloseStream = false;
+        document.Open();
 
-            // Add the invoice details to the PDF
-            if(invoice.CustomerName!=null)
-            document.Add(new Paragraph("Invoice for " + invoice.CustomerName));
-            if (invoice.Address != null)
-            document.Add(new Paragraph("Address: " + invoice.Address));
-            if (invoice.WorkerName != null)
-            document.Add(new Paragraph("Worker: " + invoice.WorkerName + " " + invoice.WorkerLastName));
-            document.Add(new Paragraph(" "));
+        // Add the invoice details to the PDF
+        document.Add(new Paragraph(file.CustomerName));
+        document.Add(new Paragraph(file.Address));
 
-            PdfPTable table = new PdfPTable(4);
-            table.AddCell("Product");
-            table.AddCell("Cost");
-            table.AddCell("Tax");
-            table.AddCell("Amount");
+        document.Add(new Paragraph(" "));
 
-        foreach (var product in invoice.Products)
-            {
-                table.AddCell(product.Name);
-                table.AddCell(product.Price.ToString());
+        PdfPTable table = new PdfPTable(4);
+        table.AddCell("Product");
+        table.AddCell("Cost");
+        table.AddCell("Tax");
+        table.AddCell("Amount");
+
+        foreach (var product in file.Products)
+        {
+            table.AddCell(product.Name);
+            table.AddCell(product.Price.ToString());
             table.AddCell(product.Vat.ToString());
             table.AddCell(product.Amount.ToString());
         }
 
         document.Add(table);
-        document.Add(new Paragraph("Total: " + invoice.Total.ToString()));
-        if(invoice.TotalTax!=0)
-        document.Add(new Paragraph("Total Taxes: " + invoice.TotalTax.ToString()));
-        if(invoice.TotalNoTax!=0)
-        document.Add(new Paragraph("Total without Taxes: " + invoice.TotalNoTax.ToString()));
+        document.Add(new Paragraph(file.Total.ToString()));
+        document.Add(new Paragraph(" "));
+        document.Add(new Paragraph(file.Worker));
 
         document.Close();
 
@@ -89,12 +90,10 @@ public class InvoiceController : Controller
 
         // Return the PDF document as a FileStreamResult
         var result = new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
-        result.FileDownloadName = "JEfTest.pdf";
+        result.FileDownloadName = "GeneratedFile.pdf";
         return result;
-
-
-
-
     }
-}
 
+
+
+}
