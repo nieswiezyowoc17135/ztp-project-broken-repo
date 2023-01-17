@@ -1,11 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NuGet.Protocol.Plugins;
-using ProjektZTP.Data;
-using static ProjektZTP.Mediator.MediatorPattern;
+﻿using ProjektZTP.Data;
+using static ProjektZTP.Mediator.Abstract;
+
 
 namespace ProjektZTP.Features.OrderFeatures.Commands.AddOrder
 {
-    public class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, AddOrderCommandResult>
+    public class AddOrderCommandHandler : IHandler<AddOrderCommand, AddOrderCommandResult>
     {
         private readonly DatabaseContext _context;
 
@@ -14,11 +13,11 @@ namespace ProjektZTP.Features.OrderFeatures.Commands.AddOrder
             _context = context;
         }
 
-        public AddOrderCommandResult Handle(AddOrderCommand request)
+        public Task<AddOrderCommandResult> HandleAsync(AddOrderCommand request)
         {
             var a = _context.Orders.ToList();
 
-            return new AddOrderCommandResult();
+            return Task.FromResult(new AddOrderCommandResult());
         }
     }
 }

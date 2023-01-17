@@ -1,4 +1,5 @@
 ﻿
+using static ProjektZTP.Mediator.Abstract;
 using static ProjektZTP.Mediator.MediatorPattern;
 
 namespace ProjektZTP.Features.OrderFeatures.Commands.AddOrder

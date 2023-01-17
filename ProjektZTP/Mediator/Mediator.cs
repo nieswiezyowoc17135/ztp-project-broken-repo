@@ -1,48 +1,41 @@
-﻿namespace ProjektZTP.Mediator
+﻿using System.Collections.Concurrent;
+using System.Threading.Tasks;
+using static ProjektZTP.Mediator.Abstract;
+
+namespace ProjektZTP.Mediator
 {
     public class MediatorPattern
     {
-        public interface ICustomMediator
+        public interface IMediator
         {
-            TResponse Send<TResponse>(IRequest<TResponse> request);
+            Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request);
         }
 
-        public interface IRequestHandler<TRequest, TResponse> where TRequest : IRequest<TResponse>
+        public class Mediator : IMediator
         {
-            TResponse Handle(TRequest request);
-        }
+            private readonly IServiceProvider _serviceProvider;
+            private readonly IDictionary<Type, Type> _handlerDetails;
 
-        public interface IRequest<TResponse>
-        {
-        }
-
-        public class Mediator : ICustomMediator
-        {
-            private readonly IDictionary<Type, object> _handlers;
-
-            public Mediator()
+            public Mediator(IServiceProvider serviceProvider, IDictionary<Type, Type> handlerDetails)
             {
-                _handlers = new Dictionary<Type, object>();
+                _serviceProvider = serviceProvider;
+                _handlerDetails = handlerDetails;
             }
 
-            public void Register<TRequest, TResponse, THandler>()
-                where TRequest : IRequest<TResponse>
-                where THandler : IRequestHandler<TRequest, TResponse>
-            {
-                _handlers.Add(typeof(TRequest), Activator.CreateInstance<IRequestHandler<TRequest, TResponse>>());
-            }
-
-            public TResponse Send<TResponse>(IRequest<TResponse> request)
+            public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
             {
                 var requestType = request.GetType();
-                object handler;
-                if (!_handlers.TryGetValue(requestType, out handler))
+                if (!_handlerDetails.ContainsKey(requestType))
                 {
-                    throw new Exception($"No handler registered for request of type {requestType}");
+                    throw new Exception($"No handler {requestType.Name}");
                 }
-                var castedHandler = (IRequestHandler<IRequest<TResponse>, TResponse>)handler;
-                return castedHandler.Handle((dynamic)request);
+
+                _handlerDetails.TryGetValue(requestType, out var requestHandlerType);
+                var handler = _serviceProvider.GetRequiredService(requestHandlerType);
+
+                return await (Task<TResponse>)handler.GetType().GetMethod("HandleAsync")!.Invoke(handler, new[] { request });
             }
         }
     }
 }
+

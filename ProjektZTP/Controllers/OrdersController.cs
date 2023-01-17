@@ -4,8 +4,8 @@ using Microsoft.CodeAnalysis.Differencing;
 using ProjektZTP.Features.OrderFeatures.Commands;
 using ProjektZTP.Features.OrderFeatures.Commands.AddOrder;
 using ProjektZTP.Features.OrderFeatures.Queries;
+using ProjektZTP.Mediator;
 using ProjektZTP.Models;
-using static ProjektZTP.Mediator.MediatorPattern;
 
 namespace ProjektZTP.Controllers
 {
@@ -15,9 +15,9 @@ namespace ProjektZTP.Controllers
     {
         private readonly IMediator _mediator;
 
-        private readonly ICustomMediator _customMediator;
+        private readonly MediatorPattern.IMediator _customMediator;
 
-        public OrdersController(IMediator mediator, ICustomMediator customMediator)
+        public OrdersController(IMediator mediator, MediatorPattern.IMediator customMediator)
         {
             _mediator = mediator;
             _customMediator = customMediator;
@@ -54,7 +54,7 @@ namespace ProjektZTP.Controllers
         [HttpPost]
         public async Task<ActionResult> Add(AddOrderCommand command)
         {
-            var result = _customMediator.Send(command);
+            var result = await _customMediator.SendAsync(command);
             return Ok();
         }
         
