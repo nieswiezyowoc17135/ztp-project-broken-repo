@@ -10,9 +10,9 @@ public class OrderMappingProfile : Profile
     {
         CreateMap<AddOrder.AddOrderCommand, Order>()
             .ForMember(dest => dest.ProductOrder,
-                dto => dto.MapFrom(c => c.ProductIds.Select(x => new ProductOrder
+                dto => dto.MapFrom(c => c.Products.Select(x => new ProductOrder
             {
-                ProductId = x
+                ProductId = x.Id,
             }).ToList()));
 
     }

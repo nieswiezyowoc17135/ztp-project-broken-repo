@@ -9,6 +9,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Reflection.PortableExecutable;
 using static ProjektZTP.Mediator.Abstract;
+using System.Reflection;
 
 namespace ProjektZTP.Features.OrderFeatures.Commands;
 
@@ -31,7 +32,7 @@ public class AddOrder
             RuleFor(x => x.Customer).NotEmpty().NotNull();
             RuleFor(x => x.Address).NotEmpty().NotNull();
             RuleFor(x => x.UserId).NotEmpty().NotNull();
-            RuleFor(x => x.ProductIds).NotEmpty().NotNull();
+            RuleFor(x => x.Products).NotEmpty().NotNull();
         }
     }
 
@@ -39,7 +40,7 @@ public class AddOrder
     string Customer,
     string Address,
     Guid UserId,
-    ICollection<Guid> ProductIds) : IRequest<AddOrderCommandResult>;
+    ICollection<AddOrderCommandDto> Products) : IRequest<AddOrderCommandResult>;
 
     public class AddOrderCommandHandler : IHandler<AddOrderCommand, AddOrderCommandResult>
     {
@@ -47,9 +48,8 @@ public class AddOrder
         private readonly IProductsRepository _repositoryproduct;
         private readonly IOrdersRepository _repository;
         private readonly IMapper _mapper;
-        
-
         private Logger _logger;
+
         public AddOrderCommandHandler(IProductsRepository productRepositroy, IUserRepository userRepository,IOrdersRepository repository, IMapper mapper)
         {
             _logger = Logger.GetInstance();
@@ -57,7 +57,6 @@ public class AddOrder
             _repositoryuser = userRepository; 
             _repository = repository;
             _mapper = mapper;
-
         }
 
         public async Task<AddOrderCommandResult> HandleAsync(AddOrderCommand request)
@@ -75,30 +74,17 @@ public class AddOrder
             await _repository.Add(entry);
             //to change
 
-
-
-
             User user = await _repositoryuser.Get(request.UserId);
-
 
             List<Product> lista = new List<Product>();
 
-            foreach(var productid in request.ProductIds)
+            foreach(var productid in request.Products)
             {
                 
-                 var prod = await _repositoryproduct.Get(productid);
-
-                
+                 var prod = await _repositoryproduct.Get(productid.Id);
+    
                  lista.Add(prod);
-
-
-
             }
-            _repositoryproduct.Get(request.UserId);
-
-
-
-
 
             PdfBuilder builderInvoice;
 
@@ -108,8 +94,6 @@ public class AddOrder
             pdfDirector.BuildStandardFile(builderInvoice, request.Customer, request.Address, lista, user);
             _logger.Log("Invoice created.");
             SaveFile(builderInvoice.File,"invoice");
-
-
 
             PdfBuilder builderReceipt;
             builderReceipt = new ReceiptBuilder();
@@ -155,7 +139,6 @@ public class AddOrder
 
             document.Close();
 
-
             if (stream.CanSeek)
             {
                 stream.Seek(0, SeekOrigin.Begin);
@@ -165,19 +148,26 @@ public class AddOrder
             var result = new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
             result.FileDownloadName = "GeneratedFile.pdf";
 
-            string path = "C:\\Users\\richi\\Downloads\\ztp-project-master\\file"+ name +".pdf";
+            string appPath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+
+            string path = $"{appPath}\\file" + name +".pdf";
             using (FileStream filepdf = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 stream.WriteTo(filepdf);
             }
 
-
             return result;
         }
-
     }
 
     public record AddOrderCommandResult(Guid id);
+
+    public class AddOrderCommandDto
+    {
+        public Guid Id { get; set; }
+
+        public int Amount { get; set; }
+    }
 }
 
 
