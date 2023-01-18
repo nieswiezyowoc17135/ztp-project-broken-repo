@@ -44,6 +44,10 @@
               "target": "Package",
               "version": "[12.0.0, )"
             },
+            "EPPlus.Core": {
+              "target": "Package",
+              "version": "[1.5.4, )"
+            },
             "FluentAssertions": {
               "target": "Package",
               "version": "[6.8.0, )"

@@ -6,7 +6,8 @@ using System.Reflection;
 using ProjektZTP.Repository.Interfaces;
 using ProjektZTP.Mediator;
 using MediatR;
-
+using static ProjektZTP.Adapter.AdapterPattern;
+using ProjektZTP.Adapter;
 
 namespace ProjektZTP
 {
@@ -30,6 +31,7 @@ namespace ProjektZTP
             builder.Services.AddTransient<IUserRepository, UserRepository>();
             builder.Services.AddTransient<IOrdersRepository, OrdersRepository>();
             builder.Services.AddTransient<IProductsRepository, ProductsRepository>();
+            builder.Services.AddTransient<IDataExporter, AdapterPattern.DatabaseExporter>();
             builder.Services.AddMediatR(typeof(DatabaseContext).Assembly);
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddCors(options =>
