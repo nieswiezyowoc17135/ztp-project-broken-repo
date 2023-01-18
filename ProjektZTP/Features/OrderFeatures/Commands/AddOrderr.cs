@@ -50,11 +50,14 @@ public class AddOrder
         private readonly IMapper _mapper;
         private Logger _logger;
 
-        public AddOrderCommandHandler(IProductsRepository productRepositroy, IUserRepository userRepository,IOrdersRepository repository, IMapper mapper)
+
+
+
+        public AddOrderCommandHandler(IProductsRepository productRepositroy, IUserRepository userRepository, IOrdersRepository repository, IMapper mapper)
         {
             _logger = Logger.GetInstance();
             _repositoryproduct = productRepositroy;
-            _repositoryuser = userRepository; 
+            _repositoryuser = userRepository;
             _repository = repository;
             _mapper = mapper;
         }
@@ -76,14 +79,16 @@ public class AddOrder
 
             User user = await _repositoryuser.Get(request.UserId);
 
-            List<Product> lista = new List<Product>();
 
-            foreach(var productid in request.Products)
+            List<ProductAndAmount> lista = new List<ProductAndAmount>();
+
+            foreach (var productid in request.Products)
             {
-                
-                 var prod = await _repositoryproduct.Get(productid.Id);
-    
-                 lista.Add(prod);
+
+                var prod = await _repositoryproduct.Get(productid.Id);
+
+                ProductAndAmount temp = new ProductAndAmount(prod, productid.Amount);
+                lista.Add(temp);
             }
 
             PdfBuilder builderInvoice;
@@ -93,13 +98,13 @@ public class AddOrder
             PdfDirector pdfDirector = new PdfDirector();
             pdfDirector.BuildStandardFile(builderInvoice, request.Customer, request.Address, lista, user);
             _logger.Log("Invoice created.");
-            SaveFile(builderInvoice.File,"invoice");
+            SaveFile(builderInvoice.File, "invoice");
 
             PdfBuilder builderReceipt;
             builderReceipt = new ReceiptBuilder();
             pdfDirector.BuildStandardFile(builderReceipt, request.Customer, request.Address, lista, user);
             _logger.Log("Receipt created.");
-            SaveFile(builderReceipt.File,"receipt");
+            SaveFile(builderReceipt.File, "receipt");
 
             return new AddOrderCommandResult(entry.Id);
         }
@@ -126,9 +131,9 @@ public class AddOrder
 
             foreach (var product in file.Products)
             {
-                table.AddCell(product.Name);
-                table.AddCell(product.Price.ToString());
-                table.AddCell(product.Vat.ToString());
+                table.AddCell(product.Product.Name);
+                table.AddCell(product.Product.Price.ToString());
+                table.AddCell(product.Product.Vat.ToString());
                 table.AddCell(product.Amount.ToString());
             }
 
@@ -150,7 +155,7 @@ public class AddOrder
 
             string appPath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
 
-            string path = $"{appPath}\\file" + name +".pdf";
+            string path = $"{appPath}\\file" + name + ".pdf";
             using (FileStream filepdf = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
                 stream.WriteTo(filepdf);
@@ -168,6 +173,19 @@ public class AddOrder
 
         public int Amount { get; set; }
     }
+
+    public class ProductAndAmount
+    {
+        public Product Product;
+        public int Amount;
+
+        public ProductAndAmount(Product product, int amount)
+        {
+            Product = product;
+            Amount = amount;
+        }
+    }
+
 }
 
 

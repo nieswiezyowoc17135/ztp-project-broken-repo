@@ -2,12 +2,13 @@
 using ProjektZTP.Models;
 using ProjektZTP.Repository.Interfaces;
 using ProjektZTP.Repository.Repositories;
+using static ProjektZTP.Features.OrderFeatures.Commands.AddOrder;
 
 public class File
 {
     public string CustomerName { get; set; }
     public string Address { get; set; }
-    public List<Product> Products { get; set; }
+    public List<ProductAndAmount> Products { get; set; }
     public string Total { get; set; }
     public string Employee { get; set; }
 }
@@ -25,7 +26,7 @@ public abstract class PdfBuilder
 
     public abstract void BuildCustomerName(string customer);
     public abstract void BuildAddress(string address);
-    public abstract void BuildProducts(List<Product> products);
+    public abstract void BuildProducts(List<ProductAndAmount> products);
     public abstract void BuildTotal();
     public abstract void BuildEmployee(User user);
 }
@@ -49,7 +50,7 @@ class InvoiceBuilder : PdfBuilder
         file.Address = "Company address: " + address;
     }
 
-    public override void BuildProducts(List<Product> products)
+    public override void BuildProducts(List<ProductAndAmount> products)
     {
         file.Products = products;
     }
@@ -60,8 +61,8 @@ class InvoiceBuilder : PdfBuilder
         float totaltax = 0;
         for (int i = 0; i < file.Products.Count; i++)
         {
-            total += file.Products[i].Price * file.Products[i].Amount;
-            totaltax += (file.Products[i].Vat / 100) * file.Products[i].Price * file.Products[i].Amount;
+            total += file.Products[i].Product.Price * file.Products[i].Amount;
+            totaltax += (file.Products[i].Product.Vat / 100) * file.Products[i].Product.Price * file.Products[i].Amount;
         }
         float temp = total - totaltax;
         totaltax = (float)Math.Round(totaltax, 2);
@@ -92,7 +93,7 @@ class ReceiptBuilder : PdfBuilder
         file.Address = "------------------------------------------------";
     }
 
-    public override void BuildProducts(List<Product> products)
+    public override void BuildProducts(List<ProductAndAmount> products)
     {
         file.Products = products;
     }
@@ -103,7 +104,7 @@ class ReceiptBuilder : PdfBuilder
 
         for (int i = 0; i < file.Products.Count; i++)
         {
-            total += file.Products[i].Price * file.Products[i].Amount;
+            total += file.Products[i].Product.Price * file.Products[i].Amount;
 
         }
         file.Total = "Total: " + total.ToString();
@@ -118,7 +119,7 @@ class ReceiptBuilder : PdfBuilder
 
 public class PdfDirector
 {
-    public void BuildStandardFile(PdfBuilder pdfBuilder, string customer, string address, List<Product> products, User user)
+    public void BuildStandardFile(PdfBuilder pdfBuilder, string customer, string address, List<ProductAndAmount> products, User user)
     {
         pdfBuilder.BuildCustomerName(customer);
         pdfBuilder.BuildAddress(address);
