@@ -9,6 +9,7 @@
       "ProjektZTP/1.0.0": {
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "12.0.0",
+          "EPPlus.Core": "1.5.4",
           "FluentAssertions": "6.8.0",
           "FluentValidation": "11.4.0",
           "FluentValidation.AspNetCore": "11.2.2",
@@ -26,6 +27,7 @@
           "Swashbuckle.AspNetCore": "6.2.3",
           "Swashbuckle.AspNetCore.Annotations": "6.4.0",
           "Swashbuckle.AspNetCore.Swagger": "6.4.0",
+          "WindowsAzure.Storage": "9.3.3",
           "iTextSharp": "5.5.13.3"
         },
         "runtime": {

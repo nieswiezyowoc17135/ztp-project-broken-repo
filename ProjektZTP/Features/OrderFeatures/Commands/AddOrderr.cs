@@ -10,6 +10,7 @@ using System.Net.Mime;
 using System.Reflection.PortableExecutable;
 using static ProjektZTP.Mediator.Abstract;
 using System.Reflection;
+using ProjektZTP.Strategy;
 
 namespace ProjektZTP.Features.OrderFeatures.Commands;
 
@@ -98,13 +99,13 @@ public class AddOrder
             PdfDirector pdfDirector = new PdfDirector();
             pdfDirector.BuildStandardFile(builderInvoice, request.Customer, request.Address, lista, user);
             _logger.Log("Invoice created.");
-            SaveFile(builderInvoice.File, "invoice");
+            SaveFile(builderInvoice.File, "Invoice");
 
             PdfBuilder builderReceipt;
             builderReceipt = new ReceiptBuilder();
             pdfDirector.BuildStandardFile(builderReceipt, request.Customer, request.Address, lista, user);
             _logger.Log("Receipt created.");
-            SaveFile(builderReceipt.File, "receipt");
+            SaveFile(builderReceipt.File, "Receipt");
 
             return new AddOrderCommandResult(entry.Id);
         }
@@ -144,22 +145,33 @@ public class AddOrder
 
             document.Close();
 
+
+
+
+            var result = new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
+            result.FileDownloadName = "GeneratedFile.pdf";
+
+            var context = new Context();
+
+            if (name == "Invoice")
+            {
+                context.SetStrategy(new CloudStorage("azure key", "pdfztp"));
+            }
+            else
+            {
+                context.SetStrategy(new LocalFileStorage());
+            }
+
             if (stream.CanSeek)
             {
                 stream.Seek(0, SeekOrigin.Begin);
             }
 
             // Return the PDF document as a FileStreamResult
-            var result = new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
-            result.FileDownloadName = "GeneratedFile.pdf";
+            context.ExecuteStrategy(stream, name);
 
-            string appPath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+           // fileStorageStrategy.SaveFile(stream, name);
 
-            string path = $"{appPath}\\file" + name + ".pdf";
-            using (FileStream filepdf = new FileStream(path, FileMode.Create, FileAccess.Write))
-            {
-                stream.WriteTo(filepdf);
-            }
 
             return result;
         }
@@ -185,7 +197,6 @@ public class AddOrder
             Amount = amount;
         }
     }
-
 }
 
 

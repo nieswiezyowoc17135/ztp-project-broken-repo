@@ -4253,7 +4253,24 @@
         "runtime": {
           "lib/netstandard1.3/System.Xml.XPath.XmlDocument.dll": {}
         }
+      },
+      "WindowsAzure.Storage/9.3.3": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "10.0.2"
+        },
+        "compile": {
+          "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {
+            "related": ".pdb"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.3/Microsoft.WindowsAzure.Storage.dll": {
+            "related": ".pdb"
+          }
       }
+    }
     }
   },
   "libraries": {
@@ -12006,6 +12023,7 @@
       "Swashbuckle.AspNetCore >= 6.2.3",
       "Swashbuckle.AspNetCore.Annotations >= 6.4.0",
       "Swashbuckle.AspNetCore.Swagger >= 6.4.0",
+      "WindowsAzure.Storage >= 9.3.3",
       "iTextSharp >= 5.5.13.3"
     ]
   },
@@ -12127,6 +12145,10 @@
           "Swashbuckle.AspNetCore.Swagger": {
             "target": "Package",
             "version": "[6.4.0, )"
+          },
+          "WindowsAzure.Storage": {
+            "target": "Package",
+            "version": "[9.3.3, )"
           },
           "iTextSharp": {
             "target": "Package",
