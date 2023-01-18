@@ -27,9 +27,12 @@ public class EditProduct
     public class EditProductCommandHandler : IHandler<EditProductCommand, EditProductResult>
     { 
         private readonly IProductsRepository _repository;
-
+        private Logger _logger;
+        
+        
         public EditProductCommandHandler(IProductsRepository repository)
         {
+            _logger = Logger.GetInstance();
             _repository = repository;
         }
 
@@ -52,6 +55,7 @@ public class EditProduct
             productToEdit.Vat = request.Vat;
 
             var result = await _repository.Update(productToEdit);
+            _logger.Log("Product edited.");
 
             return new EditProductResult(
                 result.Name,

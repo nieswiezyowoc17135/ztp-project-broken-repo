@@ -12,8 +12,12 @@ public class DeleteUser
     {
         private readonly IUserRepository _repository;
 
+        private Logger _logger;
+        
+        
         public DeleteUserCommmandHandler(IUserRepository repository)
         {
+            _logger = Logger.GetInstance();
             _repository = repository;
         }
 
@@ -21,7 +25,7 @@ public class DeleteUser
         {
             var userToEdit = await _repository.Get(request.Id);
             await _repository.Delete(userToEdit);
-
+            _logger.Log("User deleted.");
             return new DeleteUserResult(request.Id);
         }
     }

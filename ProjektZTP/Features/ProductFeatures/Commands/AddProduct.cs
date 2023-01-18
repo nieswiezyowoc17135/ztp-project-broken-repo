@@ -27,9 +27,12 @@ public class AddProduct
     public class AddProductCommandHandler : IHandler<AddProductCommand, AddProductResult>
     {
         private readonly IProductsRepository _repository;
-
+        private Logger _logger;
+        
+        
         public AddProductCommandHandler(IProductsRepository repository)
         {
+            _logger = Logger.GetInstance();
             _repository = repository;
         }
 
@@ -51,7 +54,7 @@ public class AddProduct
                 request.Vat);
 
             await _repository.Add(entry);
-
+            _logger.Log("Product created.");
             return new AddProductResult(entry.Id);
         }
     }

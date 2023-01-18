@@ -1,5 +1,7 @@
-﻿using ProjektZTP.Models;
-
+﻿using Microsoft.Identity.Client;
+using ProjektZTP.Models;
+using ProjektZTP.Repository.Interfaces;
+using ProjektZTP.Repository.Repositories;
 
 public class File
 {
@@ -7,7 +9,7 @@ public class File
     public string Address { get; set; }
     public List<Product> Products { get; set; }
     public string Total { get; set; }
-    public string Worker { get; set; }
+    public string Employee { get; set; }
 }
 
 public abstract class PdfBuilder
@@ -21,11 +23,11 @@ public abstract class PdfBuilder
     }
 
 
-    public abstract void BuildCustomerName();
-    public abstract void BuildAddress();
-    public abstract void BuildProducts();
+    public abstract void BuildCustomerName(string customer);
+    public abstract void BuildAddress(string address);
+    public abstract void BuildProducts(List<Product> products);
     public abstract void BuildTotal();
-    public abstract void BuildWorker();
+    public abstract void BuildEmployee(User user);
 }
 
 
@@ -35,23 +37,21 @@ class InvoiceBuilder : PdfBuilder
     public InvoiceBuilder()
     {
         file = new File();
+
     }
-    public override void BuildCustomerName()
+    public async override void BuildCustomerName( string customer)
     {
-        file.CustomerName = "Company name: " + "Order.Customer";
+        file.CustomerName = "Company name: " + customer;
     }
 
-    public override void BuildAddress()
+    public override void BuildAddress(string address)
     {
-        file.Address = "Company address:: " + "***adres firmy***";
+        file.Address = "Company address: " + address;
     }
 
-    public override void BuildProducts()
+    public override void BuildProducts(List<Product> products)
     {
-        file.Products = new List<Product> {
-            new Product { Name = "Product 1", Price = 10, Vat = 1, Amount=2 },
-            new Product { Name = "Product 2", Price = 20, Vat = 2, Amount=3}
-        };
+        file.Products = products;
     }
 
     public override void BuildTotal()
@@ -67,35 +67,34 @@ class InvoiceBuilder : PdfBuilder
         totaltax = (float)Math.Round(totaltax, 2);
         file.Total = "Total: " + temp.ToString() + " + " + totaltax.ToString() + "(taxes) = " + total.ToString();
     }
-    public override void BuildWorker()
+    public override void BuildEmployee(User user)
     {
-        file.Worker = "Emplyee: " + "User.firstname" + "User.lastname";
+        file.Employee = "Emplyee: " + user.FirstName +" "+ user.LastName;
     }
 
 }
 
 class ReceiptBuilder : PdfBuilder
 {
+
     public ReceiptBuilder()
     {
         file = new File();
+
     }
-    public override void BuildCustomerName()
+    public async override void BuildCustomerName(string customer)
     {
-        file.CustomerName = "Customer: " + "Order.Customer";
+        file.CustomerName = "Customer: " + customer;
     }
 
-    public override void BuildAddress()
+    public override void BuildAddress(string address)
     {
-        file.Address = "--------------------------------------";
+        file.Address = "------------------------------------------------";
     }
 
-    public override void BuildProducts()
+    public override void BuildProducts(List<Product> products)
     {
-        file.Products = new List<Product> {
-            new Product { Name = "Product 1", Price = 10, Vat = 1, Amount=2 },
-            new Product { Name = "Product 2", Price = 20, Vat = 2, Amount=3}
-        };
+        file.Products = products;
     }
 
     public override void BuildTotal()
@@ -107,12 +106,11 @@ class ReceiptBuilder : PdfBuilder
             total += file.Products[i].Price * file.Products[i].Amount;
 
         }
-
-        file.Total = "Total after taxes: " + total.ToString();
+        file.Total = "Total: " + total.ToString();
     }
-    public override void BuildWorker()
+    public override void BuildEmployee(User user)
     {
-        file.Worker = "Emplyee: " + "User.id";
+        file.Employee = "Emplyee's Id: " + user.Id;
     }
 
 }
@@ -120,13 +118,12 @@ class ReceiptBuilder : PdfBuilder
 
 public class PdfDirector
 {
-    public void BuildStandardFile(PdfBuilder pdfBuilder)
+    public void BuildStandardFile(PdfBuilder pdfBuilder, string customer, string address, List<Product> products, User user)
     {
-        pdfBuilder.BuildCustomerName();
-        pdfBuilder.BuildAddress();
-        pdfBuilder.BuildProducts();
+        pdfBuilder.BuildCustomerName(customer);
+        pdfBuilder.BuildAddress(address);
+        pdfBuilder.BuildProducts(products);
         pdfBuilder.BuildTotal();
-        pdfBuilder.BuildWorker();
+        pdfBuilder.BuildEmployee(user);
     }
-
 }

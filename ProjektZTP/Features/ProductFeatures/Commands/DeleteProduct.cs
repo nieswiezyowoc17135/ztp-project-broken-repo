@@ -11,9 +11,12 @@ public class DeleteProduct
     public class DeleteOrderCommandHandler : IHandler<DeleteProductCommand, DeleteProductResult>
     {
         private readonly IProductsRepository _repository;
-
+        private Logger _logger;
+        
+        
         public DeleteOrderCommandHandler(IProductsRepository repository)
         {
+            _logger = Logger.GetInstance();
             _repository = repository;
         }
 
@@ -21,6 +24,7 @@ public class DeleteProduct
         {
             var productToDelete = await _repository.Get(request.Id);
             await _repository.Delete(productToDelete);
+            _logger.Log("Product deleted.");
             return new DeleteProductResult(request.Id);
         }
     }
