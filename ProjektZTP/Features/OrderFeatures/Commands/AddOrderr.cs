@@ -54,10 +54,10 @@ public class AddOrder
 
 
 
-        public AddOrderCommandHandler(IProductsRepository productRepositroy, IUserRepository userRepository, IOrdersRepository repository, IMapper mapper)
+        public AddOrderCommandHandler(IProductsRepository productRepository, IUserRepository userRepository, IOrdersRepository repository, IMapper mapper)
         {
             _logger = Logger.GetInstance();
-            _repositoryproduct = productRepositroy;
+            _repositoryproduct = productRepository;
             _repositoryuser = userRepository;
             _repository = repository;
             _mapper = mapper;
@@ -90,6 +90,9 @@ public class AddOrder
 
                 ProductAndAmount temp = new ProductAndAmount(prod, productid.Amount);
                 lista.Add(temp);
+
+                prod.Amount = prod.Amount - productid.Amount;
+                await _repositoryproduct.Update(prod);
             }
 
             PdfBuilder builderInvoice;
@@ -110,6 +113,7 @@ public class AddOrder
             return new AddOrderCommandResult(entry.Id);
         }
 
+
         private static FileStreamResult SaveFile(File file, string name)
         {
             Document document = new Document();
@@ -118,7 +122,6 @@ public class AddOrder
             writer.CloseStream = false;
             document.Open();
 
-            // Add the invoice details to the PDF
             document.Add(new Paragraph(file.CustomerName));
             document.Add(new Paragraph(file.Address));
 
@@ -145,9 +148,6 @@ public class AddOrder
 
             document.Close();
 
-
-
-
             var result = new FileStreamResult(stream, MediaTypeNames.Application.Pdf);
             result.FileDownloadName = "GeneratedFile.pdf";
 
@@ -155,7 +155,7 @@ public class AddOrder
 
             if (name == "Invoice")
             {
-                context.SetStrategy(new CloudStorage("azure key", "pdfztp"));
+                context.SetStrategy(new CloudStorage("DefaultEndpointsProtocol=https;AccountName=ztprichie;AccountKey=SA9HdPlCoRpeXGbDAnz4H+jTDtviEuPW2y6S5lLiz3WVa5qkUp5GQyb6risga3kxWsS9yzFAxfHy+AStloAPTg==;EndpointSuffix=core.windows.net", "pdfztp"));
             }
             else
             {
